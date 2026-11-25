@@ -1,0 +1,6 @@
+{
+  "name": "Koreo Tech",
+  "description": "Koreo Tech — Desenvolvimento de sites, landing pages, sistemas web, plataformas SaaS, aplicativos mobile e softwares sob medida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
