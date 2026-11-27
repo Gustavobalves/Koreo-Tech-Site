@@ -1,90 +1,163 @@
-import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { NAV_ITEMS, type PageId } from '../data/services';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
+import { SERVICES, type PageId, type ServiceId } from '../data/services';
 import { BrandMark } from './BrandMark';
 
 interface NavbarProps {
   activePage: PageId;
-  onNavigate: (page: PageId) => void;
+  onNavigate: (page: PageId, sectionId?: string) => void;
 }
+
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060913]';
 
 export function Navbar({ activePage, onNavigate }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(true);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const primaryNavLinks = NAV_ITEMS.filter((item) => item.id !== 'contato');
+  const isServiceActive = SERVICES.some((service) => service.id === activePage);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMobileMenuOpen(false);
+        setServicesOpen(false);
       }
     };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setServicesOpen(false);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
-  const handleSelect = (page: PageId) => {
+  const handleSelectPage = (page: PageId, sectionId?: string) => {
     setMobileMenuOpen(false);
-    onNavigate(page);
+    setServicesOpen(false);
+    onNavigate(page, sectionId);
+  };
+
+  const handleSelectService = (serviceId: ServiceId) => {
+    setMobileMenuOpen(false);
+    setServicesOpen(false);
+    onNavigate(serviceId);
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#060913]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        {/* Zone 1: Brand Wordmark */}
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#060913]">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        {/* Brand */}
         <button
           type="button"
-          onClick={() => handleSelect('home')}
+          onClick={() => handleSelectPage('home')}
           aria-label="Ir para a página inicial da Koreo Tech"
-          className="cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className={`cursor-pointer rounded-md p-1 ${FOCUS_RING}`}
         >
           <BrandMark />
         </button>
 
-        {/* Zone 2: Primary Desktop Navigation */}
+        {/* Desktop Navigation: Serviços (dropdown), Como trabalhamos, Contato */}
         <nav
           aria-label="Navegação principal"
-          className="hidden xl:flex items-center gap-5 2xl:gap-7"
+          className="hidden lg:flex items-center gap-8"
         >
-          {primaryNavLinks.map((item) => {
-            const isActive = activePage === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleSelect(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                className={`relative cursor-pointer py-2 text-sm font-medium whitespace-nowrap shrink-0 transition-colors duration-150 ${
-                  isActive
-                    ? 'text-white'
-                    : 'text-slate-300 hover:text-white'
-                }`}
-              >
-                {item.label}
-                <span
-                  aria-hidden="true"
-                  className={`absolute inset-x-0 -bottom-[1px] h-[2px] rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-violet-500 transition-opacity duration-150 ${
-                    isActive ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
-              </button>
-            );
-          })}
-        </nav>
+          <div ref={dropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setServicesOpen((prev) => !prev)}
+              aria-expanded={servicesOpen}
+              aria-haspopup="menu"
+              className={`inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 border-b-2 px-1 py-2 text-base font-medium transition-colors duration-150 ${FOCUS_RING} ${
+                isServiceActive
+                  ? 'border-[#2563EB] text-white'
+                  : servicesOpen
+                  ? 'border-transparent text-white'
+                  : 'border-transparent text-slate-300 hover:text-white'
+              }`}
+            >
+              <span>Serviços</span>
+              <ChevronDown
+                className={`h-4 w-4 ${servicesOpen ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
+            </button>
 
-        {/* Zone 3: Single Primary Action + Mobile Drawer Trigger */}
-        <div className="flex items-center gap-3 shrink-0">
+            {servicesOpen && (
+              <div
+                role="menu"
+                aria-label="Serviços da Koreo Tech"
+                className="absolute left-0 top-full mt-2 w-80 rounded-lg border border-white/15 bg-[#0B1122] p-2"
+              >
+                {SERVICES.map((service) => {
+                  const isCurrent = activePage === service.id;
+                  return (
+                    <button
+                      key={service.id}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => handleSelectService(service.id)}
+                      className={`flex w-full cursor-pointer flex-col rounded-md px-3.5 py-2.5 text-left transition-colors duration-150 ${FOCUS_RING} ${
+                        isCurrent
+                          ? 'bg-[#2563EB]/20 text-white'
+                          : 'text-slate-200 hover:bg-white/[0.06] hover:text-white'
+                      }`}
+                    >
+                      <span className="text-base font-semibold">
+                        {service.navLabel}
+                      </span>
+                      <span className="mt-0.5 text-sm text-slate-300">
+                        {service.deliveryEstimate}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <button
             type="button"
-            onClick={() => handleSelect('contato')}
+            onClick={() => handleSelectPage('home', 'como-trabalhamos')}
+            className={`inline-flex min-h-[44px] cursor-pointer items-center border-b-2 border-transparent px-1 py-2 text-base font-medium text-slate-300 transition-colors duration-150 hover:text-white ${FOCUS_RING}`}
+          >
+            Como trabalhamos
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSelectPage('contato')}
             aria-current={activePage === 'contato' ? 'page' : undefined}
-            className={`hidden sm:inline-flex min-h-[40px] cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap shrink-0 transition-all duration-150 ${
+            className={`inline-flex min-h-[44px] cursor-pointer items-center border-b-2 px-1 py-2 text-base font-medium transition-colors duration-150 ${FOCUS_RING} ${
               activePage === 'contato'
-                ? 'bg-white text-[#060913] shadow-[0_0_24px_rgba(96,165,250,0.3)]'
-                : 'bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.28)] hover:from-blue-500 hover:to-violet-500'
+                ? 'border-[#2563EB] text-white'
+                : 'border-transparent text-slate-300 hover:text-white'
             }`}
           >
             Contato
+          </button>
+        </nav>
+
+        {/* Primary CTA + Mobile Toggle */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleSelectPage('contato')}
+            className={`hidden sm:inline-flex min-h-[44px] cursor-pointer items-center justify-center rounded-md bg-[#2563EB] px-5 py-2.5 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] whitespace-nowrap ${FOCUS_RING}`}
+          >
+            Solicitar orçamento
           </button>
 
           <button
@@ -92,43 +165,98 @@ export function Navbar({ activePage, onNavigate }: NavbarProps) {
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation-panel"
-            aria-label={mobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
-            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-slate-200 transition-colors hover:border-white/20 hover:text-white xl:hidden"
+            aria-label={
+              mobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'
+            }
+            className={`inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-transparent text-slate-100 transition-colors duration-150 hover:border-white/35 hover:text-white lg:hidden ${FOCUS_RING}`}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
           </button>
         </div>
       </div>
 
-      {/* Responsive Mobile & Tablet Navigation Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <nav
           id="mobile-navigation-panel"
           aria-label="Navegação móvel"
-          className="border-t border-white/[0.08] bg-[#080D1B] px-4 py-4 sm:px-6 xl:hidden"
+          className="border-t border-white/10 bg-[#080D1B] px-4 py-5 sm:px-6 lg:hidden"
         >
-          <div className="mx-auto grid max-w-3xl grid-cols-1 gap-1 sm:grid-cols-2">
-            {NAV_ITEMS.map((item) => {
-              const isActive = activePage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => handleSelect(item.id)}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-lg px-4 py-2.5 text-left text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-600/20 to-violet-600/20 text-white ring-1 ring-inset ring-blue-400/35'
-                      : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
+          <div className="mx-auto max-w-3xl space-y-2">
+            <div>
+              <button
+                type="button"
+                onClick={() => setMobileServicesOpen((prev) => !prev)}
+                aria-expanded={mobileServicesOpen}
+                className={`flex min-h-[48px] w-full cursor-pointer items-center justify-between rounded-md px-4 py-3 text-left text-base font-semibold text-white transition-colors duration-150 hover:bg-white/[0.05] ${FOCUS_RING}`}
+              >
+                <span>Serviços</span>
+                <ChevronDown
+                  className={`h-5 w-5 text-slate-300 ${
+                    mobileServicesOpen ? 'rotate-180' : ''
                   }`}
-                >
-                  <span className="truncate">{item.label}</span>
-                  {isActive && (
-                    <span className="text-xs font-medium text-sky-400">Atual</span>
-                  )}
-                </button>
-              );
-            })}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {mobileServicesOpen && (
+                <div className="mt-1 space-y-1 pl-3">
+                  {SERVICES.map((service) => {
+                    const isCurrent = activePage === service.id;
+                    return (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() => handleSelectService(service.id)}
+                        aria-current={isCurrent ? 'page' : undefined}
+                        className={`flex min-h-[44px] w-full cursor-pointer items-center justify-between rounded-md px-4 py-2.5 text-left text-base transition-colors duration-150 ${FOCUS_RING} ${
+                          isCurrent
+                            ? 'bg-[#2563EB]/20 font-semibold text-white'
+                            : 'text-slate-200 hover:bg-white/[0.05] hover:text-white'
+                        }`}
+                      >
+                        <span>{service.navLabel}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleSelectPage('home', 'como-trabalhamos')}
+              className={`flex min-h-[48px] w-full cursor-pointer items-center rounded-md px-4 py-3 text-left text-base font-medium text-slate-200 transition-colors duration-150 hover:bg-white/[0.05] hover:text-white ${FOCUS_RING}`}
+            >
+              Como trabalhamos
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectPage('contato')}
+              aria-current={activePage === 'contato' ? 'page' : undefined}
+              className={`flex min-h-[48px] w-full cursor-pointer items-center rounded-md px-4 py-3 text-left text-base font-medium transition-colors duration-150 ${FOCUS_RING} ${
+                activePage === 'contato'
+                  ? 'bg-[#2563EB]/20 font-semibold text-white'
+                  : 'text-slate-200 hover:bg-white/[0.05] hover:text-white'
+              }`}
+            >
+              Contato
+            </button>
+
+            <div className="pt-2 sm:hidden">
+              <button
+                type="button"
+                onClick={() => handleSelectPage('contato')}
+                className={`inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-md bg-[#2563EB] px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] ${FOCUS_RING}`}
+              >
+                Solicitar orçamento
+              </button>
+            </div>
           </div>
         </nav>
       )}

@@ -1,14 +1,17 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   AlertCircle,
-  CheckCircle2,
   ExternalLink,
   Mail,
   MessageCircle,
-  PencilLine,
   Send,
 } from 'lucide-react';
-import { SERVICES, type PageId, type ServiceId } from '../data/services';
+import {
+  COMPANY_INFO,
+  SERVICES,
+  type PageId,
+  type ServiceId,
+} from '../data/services';
 
 interface ContactPageProps {
   initialProjectType?: ServiceId;
@@ -30,24 +33,6 @@ interface FormErrors {
   message?: string;
 }
 
-interface ContactChannels {
-  whatsapp: string;
-  email: string;
-  instagram: string;
-  linkedin: string;
-  github: string;
-}
-
-const DEFAULT_CHANNELS: ContactChannels = {
-  whatsapp: '',
-  email: '',
-  instagram: '',
-  linkedin: '',
-  github: '',
-};
-
-const STORAGE_KEY = 'koreo_tech_contact_channels';
-
 const PROJECT_OPTIONS = [
   ...SERVICES.map((service) => ({
     value: service.id,
@@ -60,6 +45,9 @@ function getProjectLabel(value: string): string {
   const found = PROJECT_OPTIONS.find((opt) => opt.value === value);
   return found ? found.label : 'Projeto digital';
 }
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060913]';
 
 export function ContactPage({
   initialProjectType,
@@ -76,20 +64,6 @@ export function ContactPage({
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [submittedData, setSubmittedData] = useState<FormState | null>(null);
-
-  const [channels, setChannels] = useState<ContactChannels>(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return { ...DEFAULT_CHANNELS, ...JSON.parse(saved) };
-      }
-    } catch {
-      // Ignore storage errors in restricted environments
-    }
-    return DEFAULT_CHANNELS;
-  });
-  const [editingChannels, setEditingChannels] = useState(false);
-  const [channelNotice, setChannelNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialProjectType || initialProjectContext) {
@@ -153,150 +127,111 @@ export function ContactPage({
     setErrors({});
   };
 
-  const handleSaveChannels = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
-    } catch {
-      // Ignore storage errors
-    }
-    setEditingChannels(false);
-    setChannelNotice('Canais atualizados localmente para testes de navegação.');
-  };
-
-  const handleChannelAction = (channelKey: keyof ContactChannels, label: string) => {
-    const rawValue = channels[channelKey].trim();
-
-    if (!rawValue) {
-      setEditingChannels(true);
-      setChannelNotice(
-        `O canal ${label} ainda está em modo placeholder. Preencha abaixo com o dado oficial da sua empresa para ativar o redirecionamento.`
-      );
-      return;
-    }
-
-    if (channelKey === 'whatsapp') {
-      const digits = rawValue.replace(/\D/g, '');
-      if (digits.length < 10) {
-        setEditingChannels(true);
-        setChannelNotice(
-          'Informe um número de WhatsApp com DDD (ex.: 5511999999999) para gerar o link de conversa.'
-        );
-        return;
-      }
-      setChannelNotice(`Link de WhatsApp pronto para +${digits} (configurado em seus canais).`);
-      return;
-    }
-
-    if (channelKey === 'email') {
-      setChannelNotice(`E-mail oficial configurado: ${rawValue}`);
-      return;
-    }
-
-    setChannelNotice(`Perfil oficial de ${label} configurado: ${rawValue}`);
-  };
+  const whatsappHref = `https://wa.me/${COMPANY_INFO.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
+    COMPANY_INFO.whatsappPrefill
+  )}`;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       {/* Breadcrumb */}
-      <nav aria-label="Caminho da página" className="flex items-center gap-2 text-xs text-slate-400">
+      <nav
+        aria-label="Caminho da página"
+        className="flex items-center gap-2 text-sm text-slate-300"
+      >
         <button
           type="button"
           onClick={() => onNavigate('home')}
-          className="cursor-pointer transition-colors hover:text-sky-300"
+          className={`cursor-pointer rounded transition-colors duration-150 hover:text-sky-300 ${focusRing}`}
         >
-          Home
+          Início
         </button>
         <span aria-hidden="true">/</span>
-        <span className="text-slate-200">Contato</span>
+        <span className="font-medium text-white">Contato</span>
       </nav>
 
       {/* Heading */}
-      <div className="mt-8 max-w-2xl">
-        <p className="text-sm font-medium text-sky-400">
+      <div className="mt-8 max-w-3xl">
+        <p className="text-sm font-semibold tracking-wide text-sky-400">
           Fale com a Koreo Tech
         </p>
-        <h1 className="mt-3 font-display text-[clamp(2rem,3.8vw,3.3rem)] font-bold leading-[1.1] tracking-tight text-white">
-          Conte sobre o seu projeto e receba um retorno técnico objetivo.
+        <h1 className="mt-3 font-display text-[clamp(2.25rem,4.2vw,3.6rem)] font-extrabold leading-[1.08] tracking-tight text-white">
+          Solicite um orçamento com escopo e prazo definidos.
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-slate-400">
-          Preencha o formulário com as informações principais ou configure seus canais diretos de WhatsApp e redes sociais ao lado.
+        <p className="mt-5 text-base leading-relaxed text-slate-300 sm:text-lg">
+          Preencha o formulário abaixo ou chame direto no WhatsApp. Retornamos em até 1 dia útil ({COMPANY_INFO.businessHours}).
         </p>
       </div>
 
-      {/* Main Split: Form + Direct Channels */}
-      <div className="mt-12 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+      {/* Main Split: Form + Company Info */}
+      <div className="mt-14 grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         {/* Form Card */}
-        <div className="rounded-2xl border border-white/[0.08] bg-[#0B1122] p-6 sm:p-8 lg:col-span-7">
+        <div className="rounded-lg border border-white/10 bg-[#0B1122] p-7 sm:p-9 lg:col-span-7">
           {submittedData ? (
-            <div role="status" aria-live="polite" className="py-4">
-              <div className="flex items-center gap-3 text-sky-400">
-                <CheckCircle2 className="h-6 w-6 shrink-0" />
-                <span className="text-sm font-semibold">
-                  Solicitação registrada com sucesso
-                </span>
-              </div>
-
-              <h2 className="mt-4 font-display text-2xl font-bold text-white">
-                Obrigado pelo contato, {submittedData.name}.
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                Sua mensagem foi validada e preparada para a equipe da Koreo Tech analisar os detalhes do projeto.
+            <div role="status" aria-live="polite" className="py-2">
+              <p className="text-sm font-semibold text-sky-400">
+                Solicitação registrada com sucesso
               </p>
 
-              <dl className="mt-6 space-y-3 rounded-xl border border-white/[0.07] bg-[#070C19] p-5 text-sm">
+              <h2 className="mt-3 font-display text-3xl font-bold text-white">
+                Obrigado pelo contato, {submittedData.name}.
+              </h2>
+              <p className="mt-3 text-base leading-relaxed text-slate-300">
+                Sua mensagem foi validada e preparada para análise da equipe da Koreo Tech.
+              </p>
+
+              <dl className="mt-6 space-y-4 rounded-lg border border-white/10 bg-[#070C19] p-6 text-base">
                 <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
-                  <dt className="text-slate-400">E-mail de retorno</dt>
-                  <dd className="font-medium text-white">{submittedData.email}</dd>
+                  <dt className="text-slate-300">E-mail de retorno</dt>
+                  <dd className="font-semibold text-white">{submittedData.email}</dd>
                 </div>
-                <div className="flex flex-col gap-1 border-t border-white/[0.06] pt-3 sm:flex-row sm:justify-between">
-                  <dt className="text-slate-400">Tipo de projeto</dt>
-                  <dd className="font-medium text-sky-300">
+                <div className="flex flex-col gap-1 border-t border-white/10 pt-4 sm:flex-row sm:justify-between">
+                  <dt className="text-slate-300">Tipo de projeto</dt>
+                  <dd className="font-semibold text-sky-300">
                     {getProjectLabel(submittedData.projectType)}
                   </dd>
                 </div>
-                <div className="border-t border-white/[0.06] pt-3">
-                  <dt className="text-slate-400">Mensagem enviada</dt>
-                  <dd className="mt-1.5 whitespace-pre-line text-slate-200">
+                <div className="border-t border-white/10 pt-4">
+                  <dt className="text-slate-300">Mensagem enviada</dt>
+                  <dd className="mt-2 whitespace-pre-line text-slate-200">
                     {submittedData.message}
                   </dd>
                 </div>
               </dl>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-4">
                 <button
                   type="button"
                   onClick={handleResetForm}
-                  className="inline-flex min-h-[44px] cursor-pointer items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:from-blue-500 hover:to-violet-500"
+                  className={`inline-flex min-h-[48px] cursor-pointer items-center justify-center rounded-md bg-[#2563EB] px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] ${focusRing}`}
                 >
                   Enviar nova mensagem
                 </button>
                 <button
                   type="button"
                   onClick={() => onNavigate('home')}
-                  className="inline-flex min-h-[44px] cursor-pointer items-center justify-center rounded-lg border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:border-white/25 hover:text-white"
+                  className={`inline-flex min-h-[48px] cursor-pointer items-center justify-center rounded-md border border-white/25 bg-transparent px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:border-white/45 ${focusRing}`}
                 >
-                  Voltar para a Home
+                  Voltar para o Início
                 </button>
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <div>
-                <h2 className="font-display text-xl font-semibold text-white">
-                  Solicitar orçamento ou conversa técnica
+                <h2 className="font-display text-2xl font-bold text-white">
+                  Detalhes do projeto
                 </h2>
-                <p className="mt-1 text-xs text-slate-400">
-                  Todos os campos marcados são necessários para entendermos sua demanda.
+                <p className="mt-1 text-sm text-slate-300">
+                  Campos marcados com * são obrigatórios.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 {/* Nome */}
                 <div>
                   <label
                     htmlFor="contact-name"
-                    className="block text-sm font-medium text-slate-200"
+                    className="block text-sm font-semibold text-slate-200"
                   >
                     Nome *
                   </label>
@@ -313,16 +248,16 @@ export function ContactPage({
                     }}
                     aria-invalid={Boolean(errors.name)}
                     aria-describedby={errors.name ? 'contact-name-error' : undefined}
-                    className={`mt-2 block min-h-[44px] w-full rounded-lg border bg-[#070C19] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-sky-400 focus:outline-none ${
-                      errors.name ? 'border-rose-400/80' : 'border-white/12'
+                    className={`mt-2 block min-h-[48px] w-full rounded-md border bg-[#070C19] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-colors duration-150 focus:border-[#3B82F6] focus:outline-none ${
+                      errors.name ? 'border-rose-400/80' : 'border-white/15'
                     }`}
                   />
                   {errors.name && (
                     <p
                       id="contact-name-error"
-                      className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-300"
+                      className="mt-2 flex items-center gap-1.5 text-sm text-rose-300"
                     >
-                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                       <span>{errors.name}</span>
                     </p>
                   )}
@@ -332,7 +267,7 @@ export function ContactPage({
                 <div>
                   <label
                     htmlFor="contact-email"
-                    className="block text-sm font-medium text-slate-200"
+                    className="block text-sm font-semibold text-slate-200"
                   >
                     E-mail *
                   </label>
@@ -349,16 +284,16 @@ export function ContactPage({
                     }}
                     aria-invalid={Boolean(errors.email)}
                     aria-describedby={errors.email ? 'contact-email-error' : undefined}
-                    className={`mt-2 block min-h-[44px] w-full rounded-lg border bg-[#070C19] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-sky-400 focus:outline-none ${
-                      errors.email ? 'border-rose-400/80' : 'border-white/12'
+                    className={`mt-2 block min-h-[48px] w-full rounded-md border bg-[#070C19] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-colors duration-150 focus:border-[#3B82F6] focus:outline-none ${
+                      errors.email ? 'border-rose-400/80' : 'border-white/15'
                     }`}
                   />
                   {errors.email && (
                     <p
                       id="contact-email-error"
-                      className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-300"
+                      className="mt-2 flex items-center gap-1.5 text-sm text-rose-300"
                     >
-                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                       <span>{errors.email}</span>
                     </p>
                   )}
@@ -369,7 +304,7 @@ export function ContactPage({
               <div>
                 <label
                   htmlFor="contact-project-type"
-                  className="block text-sm font-medium text-slate-200"
+                  className="block text-sm font-semibold text-slate-200"
                 >
                   Tipo de projeto *
                 </label>
@@ -384,10 +319,14 @@ export function ContactPage({
                     }
                   }}
                   aria-invalid={Boolean(errors.projectType)}
-                  className="mt-2 block min-h-[44px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3.5 py-2.5 text-sm text-white transition-colors focus:border-sky-400 focus:outline-none"
+                  className="mt-2 block min-h-[48px] w-full rounded-md border border-white/15 bg-[#070C19] px-4 py-3 text-base text-white transition-colors duration-150 focus:border-[#3B82F6] focus:outline-none"
                 >
                   {PROJECT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-[#0B1122] text-white">
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      className="bg-[#0B1122] text-white"
+                    >
                       {option.label}
                     </option>
                   ))}
@@ -398,7 +337,7 @@ export function ContactPage({
               <div>
                 <label
                   htmlFor="contact-message"
-                  className="block text-sm font-medium text-slate-200"
+                  className="block text-sm font-semibold text-slate-200"
                 >
                   Mensagem *
                 </label>
@@ -406,7 +345,7 @@ export function ContactPage({
                   id="contact-message"
                   name="message"
                   rows={5}
-                  placeholder="Conte qual problema deseja resolver, prazos estimados ou principais funcionalidades imaginadas..."
+                  placeholder="Conte o objetivo do projeto, prazo desejado e principais funcionalidades..."
                   value={form.message}
                   onChange={(e) => {
                     setForm((prev) => ({ ...prev, message: e.target.value }));
@@ -414,27 +353,27 @@ export function ContactPage({
                   }}
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? 'contact-message-error' : undefined}
-                  className={`mt-2 block w-full rounded-lg border bg-[#070C19] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-sky-400 focus:outline-none ${
-                    errors.message ? 'border-rose-400/80' : 'border-white/12'
+                  className={`mt-2 block w-full rounded-md border bg-[#070C19] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-colors duration-150 focus:border-[#3B82F6] focus:outline-none ${
+                    errors.message ? 'border-rose-400/80' : 'border-white/15'
                   }`}
                 />
                 {errors.message && (
                   <p
                     id="contact-message-error"
-                    className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-300"
+                    className="mt-2 flex items-center gap-1.5 text-sm text-rose-300"
                   >
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                    <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span>{errors.message}</span>
                   </p>
                 )}
               </div>
 
-              <div className="pt-1">
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.3)] transition-all duration-150 hover:from-blue-500 hover:to-violet-500 sm:w-auto"
+                  className={`inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#2563EB] px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] sm:w-auto ${focusRing}`}
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-5 w-5" aria-hidden="true" />
                   Enviar mensagem
                 </button>
               </div>
@@ -442,203 +381,96 @@ export function ContactPage({
           )}
         </div>
 
-        {/* Direct Channels Column (Editable Placeholders — No Fabricated Real Data) */}
+        {/* Direct Channels & Institutional Data */}
         <aside className="space-y-6 lg:col-span-5">
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0B1122] p-6 sm:p-7">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-display text-lg font-semibold text-white">
-                  Canais diretos e redes sociais
-                </h2>
-                <p className="mt-1 text-xs leading-relaxed text-slate-400">
-                  Espaços preparados para você inserir o WhatsApp, e-mail e perfis oficiais da Koreo Tech.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingChannels((prev) => !prev);
-                  setChannelNotice(null);
-                }}
-                className="inline-flex min-h-[36px] shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-white/12 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-sky-300 transition-colors hover:border-sky-400/40 hover:text-white"
-              >
-                <PencilLine className="h-3.5 w-3.5" />
-                {editingChannels ? 'Fechar edição' : 'Editar canais'}
-              </button>
-            </div>
+          <div className="rounded-lg border border-white/10 bg-[#0B1122] p-7">
+            <h2 className="font-display text-2xl font-bold text-white">
+              Canais diretos e dados da empresa
+            </h2>
+            <p className="mt-2 text-base leading-relaxed text-slate-300">
+              Atendimento remoto para empresas em todo o Brasil.
+            </p>
 
-            {channelNotice && (
-              <div
-                role="status"
-                className="mt-4 rounded-xl border border-sky-400/25 bg-sky-500/10 p-3.5 text-xs leading-relaxed text-sky-200"
+            <div className="mt-6 space-y-3">
+              {/* WhatsApp */}
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex min-h-[56px] w-full items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-600/15 px-4 py-3.5 text-left transition-colors duration-150 hover:border-emerald-400/60 ${focusRing}`}
               >
-                {channelNotice}
-              </div>
-            )}
-
-            {/* Primary WhatsApp Action */}
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={() => handleChannelAction('whatsapp', 'WhatsApp')}
-                className="flex min-h-[50px] w-full cursor-pointer items-center justify-between rounded-xl border border-blue-400/30 bg-gradient-to-r from-blue-600/20 to-violet-600/20 px-4 py-3 text-left transition-colors hover:border-sky-400/50 hover:from-blue-600/30 hover:to-violet-600/30"
-              >
-                <span className="flex items-center gap-3">
-                  <MessageCircle className="h-5 w-5 text-sky-400" />
+                <span className="flex items-center gap-3.5">
+                  <MessageCircle className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden="true" />
                   <span>
-                    <span className="block text-sm font-semibold text-white">
-                      Conversar pelo WhatsApp
+                    <span className="block text-base font-semibold text-white">
+                      WhatsApp comercial
                     </span>
-                    <span className="block text-xs text-slate-300">
-                      {channels.whatsapp || '+55 (00) 00000-0000 · Insira seu número'}
+                    <span className="block text-sm text-slate-200">
+                      {COMPANY_INFO.whatsappDisplay}
                     </span>
                   </span>
                 </span>
-                <ExternalLink className="h-4 w-4 text-sky-300" />
-              </button>
-            </div>
+                <ExternalLink className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden="true" />
+              </a>
 
-            {/* Email Row */}
-            <div className="mt-3">
-              <button
-                type="button"
-                onClick={() => handleChannelAction('email', 'E-mail comercial')}
-                className="flex min-h-[48px] w-full cursor-pointer items-center justify-between rounded-xl border border-white/[0.08] bg-[#070C19] px-4 py-3 text-left transition-colors hover:border-white/20"
+              {/* E-mail */}
+              <a
+                href={`mailto:${COMPANY_INFO.email}`}
+                className={`flex min-h-[56px] w-full items-center justify-between rounded-md border border-white/10 bg-[#070C19] px-4 py-3.5 text-left transition-colors duration-150 hover:border-white/25 ${focusRing}`}
               >
-                <span className="flex items-center gap-3 min-w-0">
-                  <Mail className="h-4 w-4 shrink-0 text-violet-300" />
+                <span className="flex items-center gap-3.5 min-w-0">
+                  <Mail className="h-5 w-5 shrink-0 text-sky-400" aria-hidden="true" />
                   <span className="min-w-0">
-                    <span className="block text-xs text-slate-400">E-mail comercial</span>
-                    <span className="block truncate text-sm font-medium text-slate-200">
-                      {channels.email || 'contato@seudominio.com.br'}
+                    <span className="block text-sm text-slate-300">E-mail</span>
+                    <span className="block truncate text-base font-semibold text-white">
+                      {COMPANY_INFO.email}
                     </span>
                   </span>
                 </span>
-                <ExternalLink className="h-4 w-4 shrink-0 text-slate-400" />
-              </button>
+                <ExternalLink className="h-5 w-5 shrink-0 text-slate-300" aria-hidden="true" />
+              </a>
             </div>
 
-            {/* Social Network Buttons */}
-            <div className="mt-5 border-t border-white/[0.08] pt-5">
-              <p className="text-xs font-medium text-slate-400">
-                Redes sociais
-              </p>
-              <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                {[
-                  {
-                    key: 'linkedin' as const,
-                    label: 'LinkedIn',
-                    placeholder: '/company/koreotech',
-                  },
-                  {
-                    key: 'instagram' as const,
-                    label: 'Instagram',
-                    placeholder: '@koreotech',
-                  },
-                  {
-                    key: 'github' as const,
-                    label: 'GitHub',
-                    placeholder: 'github.com/koreotech',
-                  },
-                ].map((social) => (
-                  <button
-                    key={social.key}
-                    type="button"
-                    onClick={() => handleChannelAction(social.key, social.label)}
-                    className="flex min-h-[44px] cursor-pointer flex-col justify-center rounded-xl border border-white/[0.08] bg-[#070C19] px-3.5 py-2.5 text-left transition-colors hover:border-blue-400/35 hover:bg-white/[0.03]"
-                  >
-                    <span className="text-xs font-semibold text-white">
-                      {social.label}
-                    </span>
-                    <span className="mt-0.5 truncate text-[11px] text-slate-400">
-                      {channels[social.key] || social.placeholder}
-                    </span>
-                  </button>
-                ))}
+            {/* Cidade/Estado & CNPJ */}
+            <dl className="mt-6 space-y-4 border-t border-white/10 pt-6 text-base">
+              <div>
+                <dt className="text-sm text-slate-300">Cidade / Estado</dt>
+                <dd className="mt-0.5 font-semibold text-white">
+                  {COMPANY_INFO.cityState}
+                </dd>
               </div>
-            </div>
-
-            {/* Editable Channel Configuration Form */}
-            {editingChannels && (
-              <form
-                onSubmit={handleSaveChannels}
-                className="mt-5 space-y-3 border-t border-white/[0.08] pt-5"
-              >
-                <p className="text-xs font-semibold text-white">
-                  Personalizar canais de contato
-                </p>
-                <input
-                  type="text"
-                  placeholder="WhatsApp (ex.: +55 11 90000-0000)"
-                  value={channels.whatsapp}
-                  onChange={(e) =>
-                    setChannels((prev) => ({ ...prev, whatsapp: e.target.value }))
-                  }
-                  className="block min-h-[40px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
-                />
-                <input
-                  type="email"
-                  placeholder="E-mail (ex.: contato@koreotech.com.br)"
-                  value={channels.email}
-                  onChange={(e) =>
-                    setChannels((prev) => ({ ...prev, email: e.target.value }))
-                  }
-                  className="block min-h-[40px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="LinkedIn (ex.: linkedin.com/company/koreotech)"
-                  value={channels.linkedin}
-                  onChange={(e) =>
-                    setChannels((prev) => ({ ...prev, linkedin: e.target.value }))
-                  }
-                  className="block min-h-[40px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Instagram (ex.: @koreotech)"
-                  value={channels.instagram}
-                  onChange={(e) =>
-                    setChannels((prev) => ({ ...prev, instagram: e.target.value }))
-                  }
-                  className="block min-h-[40px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="GitHub (ex.: github.com/koreotech)"
-                  value={channels.github}
-                  onChange={(e) =>
-                    setChannels((prev) => ({ ...prev, github: e.target.value }))
-                  }
-                  className="block min-h-[40px] w-full rounded-lg border border-white/12 bg-[#070C19] px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="inline-flex min-h-[40px] w-full cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
-                >
-                  Salvar canais
-                </button>
-              </form>
-            )}
+              <div>
+                <dt className="text-sm text-slate-300">CNPJ</dt>
+                <dd className="mt-0.5 font-mono text-base font-medium text-white">
+                  {COMPANY_INFO.cnpj}
+                </dd>
+              </div>
+            </dl>
           </div>
 
-          {/* Quiet Expectation Card */}
-          <div className="rounded-2xl border border-white/[0.08] bg-[#080E1D] p-6">
-            <h3 className="font-display text-base font-semibold text-white">
+          {/* What happens next */}
+          <div className="rounded-lg border border-white/10 bg-[#080E1D] p-7">
+            <h3 className="font-display text-xl font-bold text-white">
               O que acontece após o envio?
             </h3>
-            <ol className="mt-4 space-y-3 text-sm text-slate-400">
-              <li className="flex gap-3">
-                <span className="font-mono text-xs text-sky-400 tabular-nums pt-0.5">01</span>
-                <span>Analisamos o tipo de projeto e os objetivos informados na mensagem.</span>
+            <ol className="mt-5 space-y-4 text-base text-slate-300">
+              <li className="flex gap-3.5">
+                <span className="font-mono text-sm font-semibold text-sky-400 tabular-nums pt-0.5">
+                  01
+                </span>
+                <span>Analisamos o escopo informado em até 1 dia útil.</span>
               </li>
-              <li className="flex gap-3">
-                <span className="font-mono text-xs text-sky-400 tabular-nums pt-0.5">02</span>
-                <span>Agendamos uma conversa objetiva para alinhar escopo e prioridades.</span>
+              <li className="flex gap-3.5">
+                <span className="font-mono text-sm font-semibold text-sky-400 tabular-nums pt-0.5">
+                  02
+                </span>
+                <span>Fazemos uma conversa de 20 minutos para alinhar prioridades.</span>
               </li>
-              <li className="flex gap-3">
-                <span className="font-mono text-xs text-sky-400 tabular-nums pt-0.5">03</span>
-                <span>Apresentamos proposta com etapas, prazos e investimento claro.</span>
+              <li className="flex gap-3.5">
+                <span className="font-mono text-sm font-semibold text-sky-400 tabular-nums pt-0.5">
+                  03
+                </span>
+                <span>Enviamos proposta formal com etapas, prazo e valor fechado.</span>
               </li>
             </ol>
           </div>

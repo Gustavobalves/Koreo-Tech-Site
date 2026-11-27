@@ -1,48 +1,49 @@
 import { useState } from 'react';
-import { ArrowRight, Code2, Compass, Layers, ShieldCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import {
   CUSTOM_SOFTWARE_IMAGE_PATH,
   HERO_IMAGE_PATH,
+  PORTFOLIO_PROJECTS,
   SERVICES,
+  TESTIMONIALS,
   type PageId,
   type ServiceId,
 } from '../data/services';
 
 interface HomePageProps {
   onNavigate: (page: PageId) => void;
-  onStartProject: (serviceId?: ServiceId) => void;
+  onStartProject: (serviceId?: ServiceId, context?: string) => void;
 }
 
 const ENGINEERING_PILLARS = [
   {
     number: '01',
-    title: 'Arquitetura pensada para durar',
+    title: 'Escopo e prazo fechados na proposta',
     description:
-      'Código organizado, seguro e fácil de manter para que seu site, sistema ou plataforma evolua junto com a empresa.',
-    icon: Layers,
+      'Antes de iniciar, você recebe a lista exata de entregas, o cronograma em semanas e o valor total sem surpresas.',
   },
   {
     number: '02',
-    title: 'Clareza de ponta a ponta',
+    title: 'Entregas semanais para validação',
     description:
-      'Escopo bem definido, marcos de entrega objetivos e comunicação direta com quem projeta e desenvolve a solução.',
-    icon: Compass,
+      'Você acompanha o projeto em ambiente de testes toda semana e aprova cada tela antes da etapa seguinte.',
   },
   {
     number: '03',
-    title: 'Experiência fluida em toda tela',
+    title: 'Código próprio e documentado',
     description:
-      'Interfaces limpas, rápidas e acessíveis em celulares, tablets e computadores, sem complexidade desnecessária.',
-    icon: Code2,
+      'Repositório organizado e propriedade total do código para sua empresa manter ou expandir quando precisar.',
   },
   {
     number: '04',
-    title: 'Segurança e estabilidade',
+    title: 'Publicação e suporte inicial',
     description:
-      'Boas práticas de engenharia, validação rigorosa e acompanhamento na entrada em produção para operar com tranquilidade.',
-    icon: ShieldCheck,
+      'Configuramos domínio, certificado SSL, testes em produção e acompanhamos a estabilidade após o lançamento.',
   },
 ];
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060913]';
 
 export function HomePage({ onNavigate, onStartProject }: HomePageProps) {
   const [heroImgError, setHeroImgError] = useState(false);
@@ -58,114 +59,99 @@ export function HomePage({ onNavigate, onStartProject }: HomePageProps) {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-white/[0.08]">
-        {/* Background Tech Image with Measured Dark-Blue Scrim */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#060913]">
         <div className="absolute inset-0">
           {!heroImgError ? (
             <img
               src={HERO_IMAGE_PATH}
-              alt="Equipe de engenharia de software da Koreo Tech desenvolvendo interfaces digitais e código em estúdio moderno"
+              alt="Equipe da Koreo Tech desenvolvendo interfaces digitais e código em estúdio"
               referrerPolicy="no-referrer"
               onError={() => setHeroImgError(true)}
               className="h-full w-full object-cover object-center"
             />
           ) : (
-            <div className="h-full w-full bg-gradient-to-br from-[#07112B] via-[#060913] to-[#170F2E]" />
+            <div className="h-full w-full bg-[#060913]" />
           )}
-          {/* Layered dark-blue/slate scrim for crisp WCAG AA+ legibility */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-[#050814]/95 via-[#071024]/86 to-[#0B1229]/72"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#060913] via-transparent to-[#060913]/55"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-32 left-1/3 h-96 w-96 rounded-full bg-blue-600/20 blur-3xl"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute right-10 bottom-0 h-80 w-80 rounded-full bg-violet-600/18 blur-3xl"
+            className="absolute inset-0 bg-[#060913]/82"
           />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-36">
           <div className="max-w-3xl">
-            <p className="text-sm font-medium text-sky-300">
-              Koreo Tech · Engenharia de software e produtos digitais
+            <p className="text-sm font-semibold tracking-wide text-sky-300">
+              Koreo Tech · Engenharia de software para empresas
             </p>
 
-            <h1 className="mt-5 font-display text-[clamp(2.25rem,4.6vw,4rem)] font-bold leading-[1.08] tracking-tight text-white">
-              Tecnologia sob medida para tirar suas ideias do papel.
+            <h1 className="mt-5 font-display text-[clamp(2.5rem,5vw,4.35rem)] font-extrabold leading-[1.06] tracking-tight text-white">
+              Sites, sistemas e aplicativos entregues no prazo combinado.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">
-              A Koreo Tech cria sites, sistemas, plataformas SaaS, aplicativos e softwares para ajudar empresas a crescer.
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-200 sm:text-xl">
+              Construímos landing pages em 1 a 2 semanas, sites institucionais em 3 a 5 semanas e sistemas web ou MVPs em 4 a 8 semanas — com escopo claro e código próprio.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <button
                 type="button"
-                onClick={scrollToServices}
-                className="inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_0_28px_rgba(59,130,246,0.35)] transition-all duration-150 hover:from-blue-500 hover:to-violet-500 whitespace-nowrap"
+                onClick={() => onStartProject()}
+                className={`inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-2 rounded-md bg-[#2563EB] px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] whitespace-nowrap ${focusRing}`}
               >
-                Conheça nossos serviços
-                <ArrowRight className="h-4 w-4" />
+                Solicitar orçamento
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </button>
 
               <button
                 type="button"
-                onClick={() => onNavigate('contato')}
-                className="inline-flex min-h-[48px] cursor-pointer items-center justify-center rounded-lg border border-white/20 bg-[#060913]/60 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors duration-150 hover:border-sky-400/50 hover:bg-white/[0.06] whitespace-nowrap"
+                onClick={scrollToServices}
+                className={`inline-flex min-h-[48px] cursor-pointer items-center justify-center rounded-md border border-white/25 bg-transparent px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:border-white/50 whitespace-nowrap ${focusRing}`}
               >
-                Fale com a equipe
+                Ver os 6 serviços
               </button>
             </div>
           </div>
 
-          {/* Quiet Horizontal Overview Strip */}
-          <div className="mt-16 grid grid-cols-2 gap-6 border-t border-white/12 pt-8 sm:grid-cols-4">
+          {/* Concrete delivery strip */}
+          <div className="mt-16 grid grid-cols-1 gap-6 border-t border-white/15 pt-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { value: '6 frentes', label: 'Especialidades independentes' },
-              { value: '100% sob medida', label: 'Código adaptado ao negócio' },
-              { value: 'Web e mobile', label: 'Experiência responsiva' },
-              { value: 'Escopo claro', label: 'Do diagnóstico à entrega' },
+              { value: '1 a 2 semanas', label: 'Landing pages para campanhas' },
+              { value: '3 a 5 semanas', label: 'Sites institucionais completos' },
+              { value: '4 a 8 semanas', label: 'Sistemas web e automações' },
+              { value: 'Retorno em 1 dia útil', label: 'Orçamento com prazo definido' },
             ].map((item) => (
               <div key={item.label}>
-                <p className="font-display text-lg font-semibold text-white tabular-nums">
+                <p className="font-display text-xl font-bold text-white tabular-nums">
                   {item.value}
                 </p>
-                <p className="mt-1 text-xs text-slate-300">{item.label}</p>
+                <p className="mt-1 text-sm text-slate-300">{item.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Main Services Overview (Asymmetric Editorial Bento Grid) */}
+      {/* Main Services Overview */}
       <section
         id="servicos-visao-geral"
-        className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24"
+        className="mx-auto max-w-7xl scroll-mt-20 px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32"
       >
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <div className="max-w-2xl">
-            <p className="text-sm font-medium text-sky-400">
-              Especialidades da Koreo Tech
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold tracking-wide text-sky-400">
+              Serviços da Koreo Tech
             </p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Soluções dedicadas para cada etapa da sua presença e operação digital.
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              Seis frentes de desenvolvimento com escopo claro.
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-slate-400">
-            Cada frente possui página própria com escopo, benefícios, exemplos de projetos e processo de desenvolvimento.
+          <p className="max-w-md text-base leading-relaxed text-slate-300">
+            Cada frente possui página detalhada com prazos médios, exemplos práticos e etapas de entrega.
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-12">
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-12">
           {SERVICES.map((service, idx) => {
-            // Intentional asymmetric desktop rhythm: 7+5, 5+7, 6+6
             const spanClasses = [
               'md:col-span-7',
               'md:col-span-5',
@@ -178,39 +164,39 @@ export function HomePage({ onNavigate, onStartProject }: HomePageProps) {
             return (
               <article
                 key={service.id}
-                className={`${spanClasses} group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#0B1122] p-7 transition-colors duration-150 hover:border-blue-400/35 hover:bg-[#0E162B]`}
+                className={`${spanClasses} flex flex-col justify-between rounded-lg border border-white/10 bg-[#0B1122] p-8 transition-colors duration-150 hover:border-white/25`}
               >
                 <div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-mono text-xs font-medium text-sky-400 tabular-nums">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <span className="font-mono text-sm font-semibold text-sky-400 tabular-nums">
                       {service.index}
                     </span>
-                    <span className="text-xs text-slate-400">
-                      {service.focusAreas.join(' · ')}
+                    <span className="text-sm font-medium text-sky-300">
+                      {service.deliveryEstimate}
                     </span>
                   </div>
 
-                  <h3 className="mt-4 font-display text-2xl font-semibold tracking-tight text-white">
+                  <h3 className="mt-4 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
                     {service.title}
                   </h3>
 
-                  <p className="mt-2 text-sm font-medium text-blue-200/90">
+                  <p className="mt-2 text-base font-medium text-blue-200">
                     {service.tagline}
                   </p>
 
-                  <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  <p className="mt-3 text-base leading-relaxed text-slate-300">
                     {service.shortDescription}
                   </p>
                 </div>
 
-                <div className="mt-7 flex items-center justify-between border-t border-white/[0.06] pt-5">
+                <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5">
                   <button
                     type="button"
                     onClick={() => onNavigate(service.id)}
-                    className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 text-sm font-semibold text-sky-300 transition-colors hover:text-white"
+                    className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md text-base font-semibold text-sky-300 transition-colors duration-150 hover:text-white ${focusRing}`}
                   >
-                    Explorar {service.title}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
+                    Ver detalhes de {service.navLabel}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
               </article>
@@ -219,111 +205,236 @@ export function HomePage({ onNavigate, onStartProject }: HomePageProps) {
         </div>
       </section>
 
-      {/* Engineering Approach & Value Section */}
-      <section className="border-y border-white/[0.08] bg-[#080E1D]">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
-          <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-12">
-            {/* Visual Anchor */}
-            <div className="lg:col-span-5">
-              <div className="relative h-full min-h-[320px] overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0B1224]">
-                {!studioImgError ? (
-                  <>
-                    <img
-                      src={CUSTOM_SOFTWARE_IMAGE_PATH}
-                      alt="Representação modular de arquitetura de software sob medida da Koreo Tech"
-                      referrerPolicy="no-referrer"
-                      onError={() => setStudioImgError(true)}
-                      className="h-full w-full object-cover object-center"
-                    />
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-gradient-to-t from-[#060913]/90 via-[#060913]/30 to-transparent"
-                    />
-                  </>
-                ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-blue-950/60 via-[#091022] to-violet-950/60" />
-                )}
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <p className="text-xs font-medium text-sky-300">
-                    Método Koreo Tech
-                  </p>
-                  <p className="mt-2 font-display text-xl font-semibold text-white">
-                    Do primeiro rascunho até a operação em produção, sem caixas-pretas.
-                  </p>
-                </div>
-              </div>
+      {/* Portfolio / Case Studies Section */}
+      <section
+        id="projetos"
+        className="border-y border-white/10 bg-[#080E1D]"
+      >
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold tracking-wide text-sky-400">
+                Portfólio e resultados
+              </p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+                Projetos entregues: o problema e o resultado.
+              </h2>
             </div>
+            <p className="max-w-md text-base leading-relaxed text-slate-300">
+              Espaço preparado para apresentar seus casos reais com capa, contexto do cliente e resultado obtido.
+            </p>
+          </div>
 
-            {/* Structured Engineering Pillars */}
-            <div className="flex flex-col justify-between lg:col-span-7">
-              <div>
-                <p className="text-sm font-medium text-violet-300">
-                  Como desenvolvemos
-                </p>
-                <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white">
-                  Compromisso técnico com resultado real para o seu negócio.
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
-                  Antes de escrever código, entendemos a operação, o público e os objetivos comerciais de cada cliente. Assim entregamos projetos sustentáveis, rápidos e prontos para crescer.
-                </p>
-              </div>
-
-              <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {ENGINEERING_PILLARS.map((pillar) => {
-                  const Icon = pillar.icon;
-                  return (
-                    <div
-                      key={pillar.number}
-                      className="rounded-xl border border-white/[0.07] bg-[#0B1224]/90 p-5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-medium text-sky-400 tabular-nums">
-                          {pillar.number}
-                        </span>
-                        <Icon className="h-4 w-4 text-violet-300" aria-hidden="true" />
-                      </div>
-                      <h3 className="mt-3 font-display text-base font-semibold text-white">
-                        {pillar.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                        {pillar.description}
+          <div className="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {PORTFOLIO_PROJECTS.map((project) => (
+              <article
+                key={project.id}
+                className="flex flex-col overflow-hidden rounded-lg border border-white/10 bg-[#0B1122] transition-colors duration-150 hover:border-white/25"
+              >
+                {/* Project Cover Slot */}
+                <div className="relative aspect-[16/10] w-full border-b border-white/10 bg-[#070C19]">
+                  {project.coverImage ? (
+                    <img
+                      src={project.coverImage}
+                      alt={`Capa do projeto ${project.client}`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center p-6 text-center">
+                      <p className="max-w-xs text-sm text-slate-300">
+                        {project.coverPlaceholder}
                       </p>
                     </div>
-                  );
-                })}
+                  )}
+                </div>
+
+                {/* Project Body */}
+                <div className="flex flex-1 flex-col justify-between p-7">
+                  <div>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-sm font-semibold text-sky-400">
+                        {project.serviceLabel}
+                      </span>
+                      <span className="text-sm text-slate-300">
+                        {project.timeline}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-3 font-display text-2xl font-bold text-white">
+                      {project.client}
+                    </h3>
+
+                    <dl className="mt-5 space-y-4 border-t border-white/10 pt-5">
+                      <div>
+                        <dt className="text-sm font-semibold text-white">
+                          Problema
+                        </dt>
+                        <dd className="mt-1 text-base leading-relaxed text-slate-300">
+                          {project.problem}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-semibold text-sky-300">
+                          Resultado
+                        </dt>
+                        <dd className="mt-1 text-base leading-relaxed text-slate-200">
+                          {project.result}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <div className="mt-7 border-t border-white/10 pt-5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onStartProject(project.serviceId, project.client)
+                      }
+                      className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md text-base font-semibold text-sky-300 transition-colors duration-150 hover:text-white ${focusRing}`}
+                    >
+                      Quero um projeto parecido
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How We Work Section */}
+      <section
+        id="como-trabalhamos"
+        className="mx-auto max-w-7xl scroll-mt-20 px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32"
+      >
+        <div className="grid grid-cols-1 items-stretch gap-12 lg:grid-cols-12">
+          {/* Visual Anchor */}
+          <div className="lg:col-span-5">
+            <div className="relative h-full min-h-[360px] overflow-hidden rounded-lg border border-white/10 bg-[#0B1122]">
+              {!studioImgError ? (
+                <>
+                  <img
+                    src={CUSTOM_SOFTWARE_IMAGE_PATH}
+                    alt="Arquitetura modular de software da Koreo Tech"
+                    referrerPolicy="no-referrer"
+                    onError={() => setStudioImgError(true)}
+                    className="h-full w-full object-cover object-center"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[#060913]/65"
+                  />
+                </>
+              ) : (
+                <div className="h-full w-full bg-[#0B1122]" />
+              )}
+              <div className="absolute inset-x-0 bottom-0 p-7">
+                <p className="text-sm font-semibold text-sky-300">
+                  Processo transparente
+                </p>
+                <p className="mt-2 font-display text-2xl font-bold text-white">
+                  Você acompanha cada entrega semanal direto com quem desenvolve.
+                </p>
               </div>
+            </div>
+          </div>
+
+          {/* Structured Engineering Pillars */}
+          <div className="flex flex-col justify-between lg:col-span-7">
+            <div>
+              <p className="text-sm font-semibold tracking-wide text-sky-400">
+                Como trabalhamos
+              </p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+                Método previsível, prazo real e comunicação direta.
+              </h2>
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+                Mapeamos o escopo antes de escrever código, validamos o design com sua equipe e entregamos em ciclos semanais até a publicação.
+              </p>
+            </div>
+
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {ENGINEERING_PILLARS.map((pillar) => (
+                <div
+                  key={pillar.number}
+                  className="rounded-lg border border-white/10 bg-[#0B1122] p-6 transition-colors duration-150 hover:border-white/25"
+                >
+                  <span className="font-mono text-sm font-semibold text-sky-400 tabular-nums">
+                    {pillar.number}
+                  </span>
+                  <h3 className="mt-3 font-display text-xl font-bold text-white">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-2 text-base leading-relaxed text-slate-300">
+                    {pillar.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="border-y border-white/10 bg-[#080E1D]">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold tracking-wide text-sky-400">
+              Depoimentos
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+              O que clientes dizem após a entrega.
+            </h2>
+          </div>
+
+          <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {TESTIMONIALS.map((testimonial) => (
+              <figure
+                key={testimonial.id}
+                className="flex flex-col justify-between rounded-lg border border-white/10 bg-[#0B1122] p-8 transition-colors duration-150 hover:border-white/25"
+              >
+                <blockquote className="text-base leading-relaxed text-slate-200">
+                  {testimonial.quote}
+                </blockquote>
+
+                <figcaption className="mt-8 border-t border-white/10 pt-5">
+                  <p className="font-display text-lg font-bold text-white">
+                    {testimonial.author}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-300">
+                    {testimonial.role} · {testimonial.company}
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Final Conversion Band */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-2xl border border-blue-400/20 bg-gradient-to-br from-[#0D1732] via-[#0B1226] to-[#171132] p-8 sm:p-12">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-violet-600/20 blur-3xl"
-          />
-          <div className="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+        <div className="rounded-lg border border-white/15 bg-[#0B1122] p-8 sm:p-14">
+          <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium text-sky-300">
+              <p className="text-sm font-semibold tracking-wide text-sky-300">
                 Próximo passo
               </p>
-              <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                Vamos conversar sobre o próximo projeto digital da sua empresa?
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Receba uma proposta com escopo e prazo em até 1 dia útil.
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-base">
-                Envie os detalhes da sua ideia ou demanda operacional. Nossa equipe analisa o cenário e retorna com uma proposta técnica clara.
+              <p className="mt-4 text-base leading-relaxed text-slate-200 sm:text-lg">
+                Envie o resumo do que sua empresa precisa. Respondemos com etapas, prazo estimado e investimento fechado.
               </p>
             </div>
             <div className="shrink-0">
               <button
                 type="button"
                 onClick={() => onStartProject()}
-                className="inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,0.3)] transition-all duration-150 hover:from-blue-500 hover:to-violet-500 whitespace-nowrap"
+                className={`inline-flex min-h-[48px] cursor-pointer items-center justify-center gap-2 rounded-md bg-[#2563EB] px-6 py-3 text-base font-semibold text-white transition-colors duration-150 hover:bg-[#1D4ED8] whitespace-nowrap ${focusRing}`}
               >
                 Solicitar orçamento
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
           </div>

@@ -13,7 +13,7 @@ export function BrandMark({ size = 'md' }: BrandMarkProps) {
   return (
     <span className="inline-flex items-center gap-2.5 whitespace-nowrap shrink-0 select-none">
       <span
-        className={`${emblemClass} relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-sky-400/40 bg-[#050A18] shadow-[0_0_16px_rgba(56,189,248,0.22)]`}
+        className={`${emblemClass} relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/15 bg-[#0B1122]`}
       >
         {!imgError ? (
           <img
@@ -30,28 +30,19 @@ export function BrandMark({ size = 'md' }: BrandMarkProps) {
             fill="none"
             aria-hidden="true"
           >
-            <rect width="36" height="36" rx="18" fill="#060D21" />
+            <rect width="36" height="36" fill="#060D21" />
             <path
               d="M11 10V26M11 18L21 10M15.5 14.5L23.5 26"
-              stroke="url(#koreo-grad)"
+              stroke="#3B82F6"
               strokeWidth="2.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <defs>
-              <linearGradient id="koreo-grad" x1="10" y1="10" x2="25" y2="26" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#38BDF8" />
-                <stop offset="1" stopColor="#8B5CF6" />
-              </linearGradient>
-            </defs>
           </svg>
         )}
       </span>
       <span className={`font-display ${textClass} font-bold tracking-tight text-white`}>
-        Koreo{' '}
-        <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
-          Tech
-        </span>
+        Koreo <span className="text-[#3B82F6]">Tech</span>
       </span>
     </span>
   );

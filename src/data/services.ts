@@ -6,10 +6,10 @@ export type ServiceId =
   | 'aplicativos'
   | 'softwares';
 
-export type PageId = 'home' | ServiceId | 'contato';
+export type PageId = 'home' | ServiceId | 'contato' | '404';
 
 export interface NavItem {
-  id: PageId;
+  id: Exclude<PageId, '404'>;
   label: string;
   hash: string;
 }
@@ -38,6 +38,7 @@ export interface ServiceDetail {
   navLabel: string;
   title: string;
   tagline: string;
+  deliveryEstimate: string;
   shortDescription: string;
   focusAreas: string[];
   heroHeadline: string;
@@ -50,6 +51,8 @@ export interface ServiceDetail {
   ctaTitle: string;
   ctaDescription: string;
   ctaButtonText: string;
+  seoTitle: string;
+  seoDescription: string;
   visualType:
     | 'sites-preview'
     | 'landing-preview'
@@ -60,6 +63,49 @@ export interface ServiceDetail {
   imageSrc?: string;
   imageAlt?: string;
 }
+
+export interface PortfolioProject {
+  id: string;
+  client: string;
+  serviceLabel: string;
+  serviceId: ServiceId;
+  coverImage?: string;
+  coverPlaceholder: string;
+  problem: string;
+  result: string;
+  timeline: string;
+}
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+}
+
+export interface PageSeoMeta {
+  title: string;
+  description: string;
+}
+
+// Dados oficiais da Koreo Tech — substitua pelos dados reais da sua empresa.
+export const COMPANY_INFO = {
+  brandName: 'Koreo Tech',
+  email: 'contato@koreotech.com.br',
+  whatsappNumber: '5511999999999', // Apenas dígitos com DDI + DDD
+  whatsappDisplay: '(11) 99999-9999',
+  cityState: 'São Paulo — SP',
+  cnpj: '00.000.000/0001-00',
+  businessHours: 'Seg a Sex, das 9h às 18h',
+  whatsappPrefill:
+    'Olá, equipe Koreo Tech! Gostaria de solicitar um orçamento para meu projeto.',
+  social: {
+    linkedin: 'https://linkedin.com/company/koreotech',
+    instagram: 'https://instagram.com/koreotech',
+    github: 'https://github.com/koreotech',
+  },
+};
 
 export const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', hash: 'home' },
@@ -76,44 +122,113 @@ export const HERO_IMAGE_PATH = '/src/assets/images/hero_koreo_software_179556289
 export const MOBILE_SYSTEMS_IMAGE_PATH = '/src/assets/images/service_mobile_systems_1795562898582.jpg';
 export const CUSTOM_SOFTWARE_IMAGE_PATH = '/src/assets/images/service_custom_software_1795562897578.jpg';
 
+// Portfólio — substitua pelos seus projetos reais e adicione o caminho da imagem em `coverImage`.
+export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
+  {
+    id: 'projeto-01',
+    client: '[Nome do Cliente 1 — Ex.: Clínica Horizonte]',
+    serviceLabel: 'Desenvolvimento de Sites',
+    serviceId: 'sites',
+    coverPlaceholder: 'Capa do projeto 01 (1200 × 750 px) — substitua em services.ts',
+    problem:
+      '[Descreva o problema: ex. Site antigo lento no celular, sem formulário funcional e fora das buscas locais no Google.]',
+    result:
+      '[Descreva o resultado: ex. Novo site entregue em 3 semanas, carregamento em menos de 2s e aumento de agendamentos pelo WhatsApp.]',
+    timeline: 'Entregue em 3 semanas',
+  },
+  {
+    id: 'projeto-02',
+    client: '[Nome do Cliente 2 — Ex.: Logística Sul]',
+    serviceLabel: 'Sistemas Web',
+    serviceId: 'sistemas',
+    coverPlaceholder: 'Capa do projeto 02 (1200 × 750 px) — substitua em services.ts',
+    problem:
+      '[Descreva o problema: ex. Controle de ordens de serviço em 6 planilhas separadas, com erros de lançamento e retrabalho diário.]',
+    result:
+      '[Descreva o resultado: ex. Sistema web centralizado entregue em 6 semanas, com histórico por cliente e relatórios em tempo real.]',
+    timeline: 'Entregue em 6 semanas',
+  },
+  {
+    id: 'projeto-03',
+    client: '[Nome do Cliente 3 — Ex.: Construtora Atlas]',
+    serviceLabel: 'Landing Pages',
+    serviceId: 'landing-pages',
+    coverPlaceholder: 'Capa do projeto 03 (1200 × 750 px) — substitua em services.ts',
+    problem:
+      '[Descreva o problema: ex. Campanhas no Google Ads enviavam tráfego para a home genérica, gerando alto custo por lead.]',
+    result:
+      '[Descreva o resultado: ex. Landing page dedicada entregue em 10 dias com rastreamento de conversão e captação direta no CRM.]',
+    timeline: 'Entregue em 10 dias',
+  },
+];
+
+// Depoimentos — substitua por relatos reais de clientes atendidos.
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: 'depoimento-01',
+    quote:
+      '[Depoimento do cliente 1: ex. "O prazo combinado foi cumprido à risca. Em quatro semanas colocamos o novo site no ar e passamos a receber contatos qualificados direto pelo WhatsApp."]',
+    author: '[Nome do Cliente 1]',
+    role: '[Cargo — Ex.: Sócio-diretor]',
+    company: '[Empresa 1]',
+  },
+  {
+    id: 'depoimento-02',
+    quote:
+      '[Depoimento do cliente 2: ex. "Substituímos nossas planilhas por um sistema web simples de usar. A equipe aprendeu no primeiro dia e cortamos horas de conferência manual toda semana."]',
+    author: '[Nome do Cliente 2]',
+    role: '[Cargo — Ex.: Gerente de Operações]',
+    company: '[Empresa 2]',
+  },
+  {
+    id: 'depoimento-03',
+    quote:
+      '[Depoimento do cliente 3: ex. "Comunicação direta com quem desenvolve, sem enrolação. Cada entrega semanal veio testada e pronta para validar."]',
+    author: '[Nome do Cliente 3]',
+    role: '[Cargo — Ex.: Fundador]',
+    company: '[Empresa 3]',
+  },
+];
+
 export const SERVICES: ServiceDetail[] = [
   {
     id: 'sites',
     index: '01',
     navLabel: 'Desenvolvimento de Sites',
     title: 'Desenvolvimento de Sites',
-    tagline: 'Sites institucionais e experiências web responsivas',
+    tagline: 'Sites institucionais rápidos, responsivos e prontos para o Google',
+    deliveryEstimate: 'Entrega em 3 a 5 semanas',
     shortDescription:
-      'Projetamos e programamos sites institucionais rápidos, responsivos e estruturados para fortalecer a presença digital da sua empresa.',
-    focusAreas: ['Arquitetura institucional', 'Performance web', 'SEO técnico'],
-    heroHeadline: 'Sites institucionais que comunicam autoridade em qualquer tela.',
+      'Desenvolvemos sites institucionais leves, fáceis de navegar no celular e estruturados com SEO técnico para gerar pedidos de orçamento.',
+    focusAreas: ['SEO técnico', 'Performance web', 'WhatsApp integrado'],
+    heroHeadline: 'Sites institucionais claros, rápidos e prontos para gerar contatos.',
     heroSummary:
-      'Criamos experiências web responsivas sob medida, com carregamento ágil, hierarquia clara e estrutura pronta para ranqueamento e crescimento contínuo.',
-    presentationTitle: 'Sua vitrine digital construída com rigor de engenharia',
+      'Entregamos sites institucionais em 3 a 5 semanas, com código próprio, carregamento rápido no celular e estrutura preparada para aparecer no Google.',
+    presentationTitle: 'Estrutura pensada para quem pesquisa sua empresa antes de comprar',
     presentationParagraphs: [
-      'Um site institucional precisa ir além de um layout bonito: ele organiza a proposta de valor da empresa, responde dúvidas rapidamente e conduz visitantes até o contato comercial sem atrito.',
-      'Na Koreo Tech, desenvolvemos sites leves e acessíveis, adaptados para celulares, tablets e computadores, com código limpo, boas práticas de SEO técnico e facilidade para futuras expansões de conteúdo.',
+      'Um site institucional precisa responder em poucos segundos o que sua empresa faz, para quem atende e como solicitar um orçamento. Quando a página demora a abrir ou confunde o visitante, o cliente fecha a aba.',
+      'Na Koreo Tech, projetamos o layout, programamos com HTML semântico e configuramos domínio, SSL, formulários e WhatsApp. Você recebe o site publicado e com controle total dos acessos.',
     ],
     benefits: [
       {
-        title: 'Credibilidade imediata para a marca',
+        title: 'Leitura clara em qualquer tela',
         description:
-          'Identidade visual coerente, tipografia legível e navegação intuitiva que transmitem profissionalismo desde o primeiro acesso.',
+          'Layout testado em smartphones, tablets e monitores grandes, com tipografia legível e botões fáceis de clicar.',
       },
       {
         title: 'Carregamento rápido e SEO técnico',
         description:
-          'Estrutura semântica otimizada, imagens preparadas para web e desempenho pensado para boas posições nos mecanismos de busca.',
+          'Código limpo, imagens otimizadas e títulos estruturados para facilitar a indexação no Google.',
       },
       {
-        title: 'Experiência fluida em celulares e desktops',
+        title: 'Contato direto com sua equipe',
         description:
-          'Layout responsivo testado em diferentes resoluções para garantir leitura confortável e botões acessíveis em qualquer dispositivo.',
+          'Formulário validado e integração com WhatsApp em pontos estratégicos, sem etapas desnecessárias.',
       },
       {
-        title: 'Base preparada para evoluir',
+        title: 'Base pronta para novas páginas',
         description:
-          'Arquitetura modular que permite adicionar novas páginas, artigos, idiomas ou integrações comerciais sem reconstruir o projeto do zero.',
+          'Arquitetura modular que permite adicionar serviços, artigos ou idiomas sem refazer o site.',
       },
     ],
     examples: [
@@ -121,61 +236,64 @@ export const SERVICES: ServiceDetail[] = [
         title: 'Site Institucional Corporativo',
         category: 'Empresas e escritórios',
         description:
-          'Apresentação completa da empresa, áreas de atuação, portfólio de serviços, equipe e canais diretos de atendimento.',
-        deliverables: 'Páginas sob medida · Formulário integrado · SEO estrutural',
+          'Apresentação da empresa, serviços, portfólio, equipe e canais diretos de orçamento.',
+        deliverables: 'Até 6 páginas · Formulário integrado · SEO estrutural',
       },
       {
         title: 'Portal de Serviços B2B',
         category: 'Consultorias e indústria',
         description:
-          'Estrutura clara para explicar soluções técnicas complexas, apresentar diferenciais competitivos e qualificar pedidos de orçamento.',
-        deliverables: 'Catálogo de soluções · Casos práticos · Captação comercial',
+          'Estrutura objetiva para explicar serviços técnicos, mostrar casos reais e qualificar pedidos comerciais.',
+        deliverables: 'Catálogo de serviços · Casos práticos · Captação comercial',
       },
       {
         title: 'Vitrine Digital de Produtos',
         category: 'Comércio e fabricantes',
         description:
-          'Exposição organizada de linhas de produtos com filtros rápidos, fichas técnicas detalhadas e redirecionamento para vendedores.',
-        deliverables: 'Filtros rápidos · Especificações · Integração com WhatsApp',
+          'Exposição de linhas de produtos com filtros rápidos, fichas técnicas e botão direto para o vendedor.',
+        deliverables: 'Filtros rápidos · Fichas técnicas · WhatsApp por item',
       },
       {
-        title: 'Portal Editorial e Institucional',
-        category: 'Conteúdo e autoridade',
+        title: 'Site para Clínicas e Profissionais',
+        category: 'Saúde, direito e consultoria',
         description:
-          'Combinação de páginas institucionais com central de artigos, materiais educativos e biblioteca de recursos para clientes.',
-        deliverables: 'Leitura otimizada · Categorias limpas · Gestão facilitada',
+          'Páginas dedicadas por especialidade, dúvidas frequentes e agendamento direto pelo WhatsApp.',
+        deliverables: 'Páginas por área · FAQ · Agendamento rápido',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Diagnóstico e estrutura',
+        title: 'Escopo e mapa de páginas',
         description:
-          'Mapeamos público, objetivos de negócio e o mapa completo de páginas para organizar a mensagem com clareza.',
+          'Definimos público, serviços prioritários e o conteúdo exato de cada página antes do design.',
       },
       {
         number: '02',
-        title: 'Design de interface',
+        title: 'Layout para aprovação',
         description:
-          'Criamos o layout responsivo alinhado à identidade visual da sua empresa, validando cada seção antes do código.',
+          'Você revisa as telas em desktop e celular e aprova ajustes antes da programação começar.',
       },
       {
         number: '03',
-        title: 'Desenvolvimento e otimização',
+        title: 'Programação e SEO',
         description:
-          'Implementamos o site com foco em velocidade, acessibilidade, formulários validados e boas práticas de SEO.',
+          'Implementamos o site com foco em velocidade, acessibilidade, formulários e metatags de busca.',
       },
       {
         number: '04',
-        title: 'Publicação e acompanhamento',
+        title: 'Publicação assistida',
         description:
-          'Configuramos domínio, certificado de segurança e verificamos todo o funcionamento em ambiente real.',
+          'Configuramos domínio, SSL e validamos todos os envios e links em ambiente real.',
       },
     ],
-    ctaTitle: 'Pronto para renovar a presença digital da sua empresa?',
+    ctaTitle: 'Precisa de um novo site para sua empresa?',
     ctaDescription:
-      'Conte para nossa equipe o que seu novo site precisa comunicar e receba uma proposta sob medida para o seu projeto.',
+      'Envie o cenário atual da sua empresa e receba uma proposta com escopo, prazo em semanas e valor fechado.',
     ctaButtonText: 'Solicitar orçamento de site',
+    seoTitle: 'Desenvolvimento de Sites Institucionais — Koreo Tech',
+    seoDescription:
+      'Criamos sites institucionais rápidos, responsivos e com SEO técnico entregues em 3 a 5 semanas. Solicite um orçamento na Koreo Tech.',
     visualType: 'sites-preview',
   },
   {
@@ -183,100 +301,104 @@ export const SERVICES: ServiceDetail[] = [
     index: '02',
     navLabel: 'Landing Pages',
     title: 'Landing Pages',
-    tagline: 'Páginas focadas em campanhas, captação de contatos e conversão',
+    tagline: 'Páginas dedicadas para anúncios, lançamentos e geração de leads',
+    deliveryEstimate: 'Entrega em 1 a 2 semanas',
     shortDescription:
-      'Construímos páginas objetivas de alta conversão para campanhas de mídia paga, lançamentos de produtos e captação qualificada de leads.',
-    focusAreas: ['Foco em conversão', 'Mídia paga e campanhas', 'Captação de leads'],
-    heroHeadline: 'Landing pages projetadas para transformar cliques em oportunidades reais.',
+      'Criamos páginas de alta velocidade para campanhas no Google Ads e Meta Ads, com rastreamento de conversão e foco em gerar contatos.',
+    focusAreas: ['Google e Meta Ads', 'Rastreamento configurado', 'Entrega em 1 a 2 semanas'],
+    heroHeadline: 'Landing pages rápidas para converter o tráfego das suas campanhas.',
     heroSummary:
-      'Cada dobra, título e chamada para ação é desenhado com foco único: captar contatos qualificados e maximizar o retorno das suas campanhas.',
-    presentationTitle: 'Estrutura direta, rápida e orientada a resultado comercial',
+      'Entregamos sua landing page em 1 a 2 semanas, pronta para Google Ads e Meta Ads, com carregamento leve no 4G e eventos de conversão configurados.',
+    presentationTitle: 'Uma página dedicada evita desperdício de verba em anúncios',
     presentationParagraphs: [
-      'Quando sua empresa investe em anúncios, eventos ou lançamentos, enviar o tráfego para uma página genérica desperdiça verba e atenção. Uma landing page dedicada elimina distrações e conduz o visitante a uma única decisão.',
-      'Na Koreo Tech, combinamos design persuasivo, leitura escaneável e carregamento instantâneo para criar páginas prontas para campanhas no Google, redes sociais e e-mail marketing.',
+      'Enviar quem clicou em um anúncio para a página inicial genérica divide a atenção do visitante e encarece o custo por lead. Uma landing page mantém uma única oferta e um caminho direto até o contato.',
+      'Na Koreo Tech, organizamos a hierarquia da oferta, programamos uma página leve para mobile e configuramos Google Analytics, Meta Pixel e integração com WhatsApp ou CRM.',
     ],
     benefits: [
       {
-        title: 'Mensagem focada em uma única ação',
+        title: 'Foco em uma única ação',
         description:
-          'Fluxo narrativo sem ruídos que apresenta proposta de valor, benefícios e provas antes de conduzir ao formulário ou WhatsApp.',
+          'Estrutura direta que apresenta a oferta, responde objeções e conduz ao formulário ou WhatsApp.',
       },
       {
-        title: 'Velocidade crítica para anúncios',
+        title: 'Velocidade em conexões móveis',
         description:
-          'Páginas leves que abrem rapidamente em conexões móveis, reduzindo desistências e melhorando o índice de qualidade das campanhas.',
+          'Código leve e imagens otimizadas para abrir rápido no celular e reduzir abandono após o clique.',
       },
       {
-        title: 'Formulários inteligentes e rastreamento',
+        title: 'Métricas e rastreamento prontos',
         description:
-          'Campos enxutos com validação imediata e preparação para eventos de conversão, pixels de mídia e integração com CRM.',
+          'Instalação de Google Analytics, Meta Pixel e eventos de envio para medir o retorno de cada campanha.',
       },
       {
-        title: 'Pronta para testes e melhorias',
+        title: 'Fácil de atualizar durante a campanha',
         description:
-          'Estrutura modular que facilita ajustar ofertas, títulos, depoimentos e variações de campanha conforme os resultados chegam.',
+          'Estrutura organizada para trocar títulos, ofertas e depoimentos sem reconstruir a página.',
       },
     ],
     examples: [
       {
-        title: 'Página de Captação de Leads B2B',
+        title: 'Captação de Leads B2B',
         category: 'Geração de demanda',
         description:
-          'Desenhada para receber tráfego de busca e anúncios, qualificando contatos para reuniões comerciais ou diagnósticos.',
-        deliverables: 'Copy orientada à oferta · Formulário qualificado · Mensuração',
+          'Página para receber cliques de busca paga e qualificar contatos para reuniões comerciais.',
+        deliverables: 'Formulário qualificado · Pixel e Analytics · WhatsApp',
       },
       {
-        title: 'Landing Page de Lançamento',
+        title: 'Página de Lançamento',
         category: 'Produtos e serviços',
         description:
-          'Página dedicada para apresentar uma novidade de mercado, detalhar diferenciais e abrir lista de espera ou vendas iniciais.',
-        deliverables: 'Seções de destaque · FAQ objetivo · CTA imediato',
+          'Apresentação focada de uma nova oferta, diferenciais práticos, FAQ e abertura de vendas ou lista.',
+        deliverables: 'Seções de oferta · FAQ objetivo · Botão de conversão',
       },
       {
-        title: 'Página de Campanha Sazonal',
-        category: 'Ações promocionais',
+        title: 'Campanha Promocional Local',
+        category: 'Serviços regionais',
         description:
-          'Experiência direta para ofertas por tempo limitado, feiras comerciais ou campanhas regionais com foco em resposta rápida.',
-        deliverables: 'Alta velocidade mobile · Botão WhatsApp · Acompanhamento',
+          'Página enxuta para anúncios geolocalizados com foco em contato imediato pelo WhatsApp.',
+        deliverables: 'Alta velocidade mobile · CTA WhatsApp · Rastreamento',
       },
       {
-        title: 'Página para Eventos e Webinars',
-        category: 'Inscrições online',
+        title: 'Inscrição para Eventos e Webinars',
+        category: 'Eventos online e presenciais',
         description:
-          'Apresentação clara de programação, palestrantes e formulário de inscrição simplificado para aumentar a taxa de comparecimento.',
-        deliverables: 'Agenda estruturada · Confirmação instantânea · Integração',
+          'Programação clara, apresentação dos palestrantes e formulário rápido para aumentar inscrições.',
+        deliverables: 'Agenda · Confirmação imediata · Integração de lista',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Objetivo e oferta',
+        title: 'Oferta e objetivo',
         description:
-          'Alinhamos o público da campanha, os argumentos principais e qual ação define a conversão ideal.',
+          'Alinhamos o público da campanha, os argumentos principais e o destino do lead.',
       },
       {
         number: '02',
-        title: 'Arquitetura persuasiva',
+        title: 'Design de conversão',
         description:
-          'Organizamos a sequência de seções e o layout visual priorizando leitura rápida em smartphones e desktops.',
+          'Montamos o layout priorizando leitura rápida no celular e destaque para o botão de contato.',
       },
       {
         number: '03',
-        title: 'Construção e integrações',
+        title: 'Código e rastreamento',
         description:
-          'Programamos a página com otimização de velocidade, formulários validados e conexão com ferramentas de análise.',
+          'Programamos a página, validamos o formulário e configuramos pixels e eventos de conversão.',
       },
       {
         number: '04',
-        title: 'Entrega pronta para rodar',
+        title: 'Testes e publicação',
         description:
-          'Testamos todos os envios, eventos e dispositivos para você colocar sua campanha no ar com segurança.',
+          'Verificamos velocidade, domínio e envios em aparelhos reais antes de liberar para os anúncios.',
       },
     ],
-    ctaTitle: 'Vai lançar uma campanha e precisa de conversão consistente?',
+    ctaTitle: 'Vai rodar anúncios e precisa da página pronta em até 2 semanas?',
     ctaDescription:
-      'Fale com a Koreo Tech para estruturar uma landing page rápida, clara e alinhada aos objetivos do seu time comercial.',
+      'Conte qual oferta vai anunciar e receba um orçamento objetivo com prazo de entrega definido.',
     ctaButtonText: 'Orçar minha landing page',
+    seoTitle: 'Criação de Landing Pages para Campanhas — Koreo Tech',
+    seoDescription:
+      'Landing pages rápidas para Google Ads e Meta Ads entregues em 1 a 2 semanas, com rastreamento de conversão e foco em leads.',
     visualType: 'landing-preview',
   },
   {
@@ -284,203 +406,211 @@ export const SERVICES: ServiceDetail[] = [
     index: '03',
     navLabel: 'Sistemas',
     title: 'Sistemas',
-    tagline: 'Sistemas web personalizados para organizar processos e operações',
+    tagline: 'Sistemas web para organizar processos e substituir planilhas',
+    deliveryEstimate: 'Primeira versão em 4 a 8 semanas',
     shortDescription:
-      'Desenvolvemos sistemas web sob medida para centralizar dados, automatizar rotinas internas e dar visibilidade real à operação da empresa.',
-    focusAreas: ['Gestão operacional', 'Painéis e relatórios', 'Integração de processos'],
-    heroHeadline: 'Sistemas web sob medida para substituir planilhas soltas por controle real.',
+      'Desenvolvemos sistemas web para centralizar cadastros, ordens de serviço, aprovações e relatórios com acesso seguro pelo navegador.',
+    focusAreas: ['Gestão operacional', 'Perfis de acesso', 'Relatórios em tempo real'],
+    heroHeadline: 'Sistemas web para substituir planilhas soltas por controle diário.',
     heroSummary:
-      'Centralize cadastros, fluxos de aprovação, indicadores e equipes em um ambiente seguro, acessível pelo navegador e desenhado para a rotina do seu negócio.',
-    presentationTitle: 'Tecnologia adaptada ao seu fluxo de trabalho, não o contrário',
+      'Entregamos sistemas web em ciclos de 4 a 8 semanas, centralizando cadastros, fluxos de aprovação e indicadores em um painel seguro no navegador.',
+    presentationTitle: 'Regras da sua operação organizadas em um só ambiente',
     presentationParagraphs: [
-      'Muitas empresas crescem apoiadas em planilhas manuais, mensagens dispersas e ferramentas que não conversam entre si. O resultado é retrabalho, falta de rastreabilidade e decisões lentas.',
-      'A Koreo Tech projeta sistemas web personalizados que respeitam as regras exatas da sua operação, com perfis de acesso, histórico de ações e painéis claros para gestores e equipes trabalharem com previsibilidade.',
+      'Quando a empresa cresce apoiada em planilhas separadas e mensagens soltas, surgem erros de digitação, retrabalho e falta de histórico. Cada setor vê um número diferente.',
+      'A Koreo Tech constrói sistemas web ajustados à rotina da sua equipe, com controle de acesso por perfil, registro de alterações e relatórios prontos para exportação.',
     ],
     benefits: [
       {
-        title: 'Redução de retrabalho e erros manuais',
+        title: 'Menos retrabalho manual',
         description:
-          'Automatize etapas repetitivas, validações de dados e notificações internas para a equipe focar no que gera valor.',
+          'Validações automáticas, preenchimento padronizado e alertas internos reduzem erros na rotina.',
       },
       {
-        title: 'Visibilidade em tempo real da operação',
+        title: 'Números confiáveis no mesmo painel',
         description:
-          'Dashboards gerenciais e relatórios filtráveis que reúnem números confiáveis em um único painel de consulta.',
+          'Dashboards com filtros por período, unidade ou responsável para acompanhar a operação sem montar planilhas.',
       },
       {
-        title: 'Controle de acesso por perfil',
+        title: 'Permissões por cargo',
         description:
-          'Permissões granulares para administradores, operadores, parceiros ou clientes visualizarem apenas o que compete à sua função.',
+          'Administradores, operadores e clientes acessam apenas os módulos e dados liberados para o seu perfil.',
       },
       {
         title: 'Acesso direto pelo navegador',
         description:
-          'Sem instalações complexas nas máquinas da equipe: basta abrir o navegador com login seguro de qualquer unidade da empresa.',
+          'Funciona em computadores e tablets sem precisar instalar programas em cada máquina da equipe.',
       },
     ],
     examples: [
       {
-        title: 'Sistema de Gestão Operacional',
-        category: 'Processos internos',
+        title: 'Gestão de Ordens de Serviço',
+        category: 'Operação interna',
         description:
-          'Controle de ordens de serviço, agenda de atendimentos, status de execução e histórico completo por cliente ou unidade.',
-        deliverables: 'Fluxo por etapas · Perfis de equipe · Relatórios exportáveis',
+          'Abertura de chamados, agenda de técnicos, status por etapa e histórico completo por cliente.',
+        deliverables: 'Fluxo por etapas · Perfis de equipe · Relatórios CSV/PDF',
       },
       {
-        title: 'Portal do Cliente ou Parceiro',
-        category: 'Relacionamento B2B',
+        title: 'Portal do Cliente B2B',
+        category: 'Atendimento e documentos',
         description:
-          'Área autenticada onde clientes acompanham pedidos, acessam documentos, abrem solicitações e consultam faturas.',
-        deliverables: 'Login seguro · Central de documentos · Histórico de chamados',
+          'Área com login onde clientes acompanham pedidos, baixam documentos e abrem solicitações.',
+        deliverables: 'Login seguro · Central de arquivos · Histórico de chamados',
       },
       {
-        title: 'CRM e Funil Comercial Sob Medida',
+        title: 'CRM Comercial Específico',
         category: 'Vendas e pós-venda',
         description:
-          'Gestão de oportunidades, propostas, metas e acompanhamento de carteira ajustada ao ciclo comercial específico da empresa.',
-        deliverables: 'Pipeline configurável · Alertas de retorno · Painel de metas',
+          'Controle de propostas, etapas de negociação, metas e alertas de retorno adaptados ao seu ciclo de vendas.',
+        deliverables: 'Pipeline configurável · Alertas · Painel de metas',
       },
       {
-        title: 'Painel Financeiro e Administrativo',
-        category: 'Controle gerencial',
+        title: 'Painel Financeiro e Aprovações',
+        category: 'Controle administrativo',
         description:
-          'Consolidação de centros de custo, aprovações de despesas, contratos recorrentes e indicadores mensais de desempenho.',
-        deliverables: 'Aprovações em níveis · Conciliação · Indicadores consolidados',
+          'Lançamento por centro de custo, aprovação de despesas em níveis e visão consolidada de contratos.',
+        deliverables: 'Aprovações · Histórico auditável · Indicadores mensais',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Mapeamento da operação',
+        title: 'Mapeamento do processo',
         description:
-          'Entendemos gargalos atuais, regras de negócio, perfis de usuário e integrações necessárias com ferramentas existentes.',
+          'Levantamos regras de negócio, perfis de usuário, gargalos atuais e integrações necessárias.',
       },
       {
         number: '02',
-        title: 'Prototipagem dos fluxos',
+        title: 'Protótipo das telas',
         description:
-          'Desenhamos as telas principais, tabelas e fluxos operacionais para validar a usabilidade junto à sua equipe.',
+          'Validamos tabelas, formulários e fluxos com quem vai usar o sistema no dia a dia.',
       },
       {
         number: '03',
-        title: 'Desenvolvimento em entregas',
+        title: 'Entregas semanais',
         description:
-          'Construímos o sistema por módulos funcionais, garantindo transparência, testes rigorosos e acompanhamento contínuo.',
+          'Desenvolvemos por módulos funcionais com demonstrações frequentes e testes em ambiente de homologação.',
       },
       {
         number: '04',
-        title: 'Implantação e evolução',
+        title: 'Entrada em produção',
         description:
-          'Apoiamos a entrada em produção, orientamos o time usuário e preparamos o ambiente para novas funcionalidades.',
+          'Publicamos o sistema, orientamos a equipe usuária e acompanhamos os primeiros dias de operação.',
       },
     ],
-    ctaTitle: 'Sua operação pede um sistema feito para a realidade da equipe?',
+    ctaTitle: 'Quer trocar planilhas por um sistema web próprio?',
     ctaDescription:
-      'Converse com nossos especialistas sobre os processos que você deseja organizar e desenhe a solução ideal com a Koreo Tech.',
+      'Explique os processos que sua equipe precisa organizar e receba um plano de entregas com prazo e investimento claros.',
     ctaButtonText: 'Planejar meu sistema web',
+    seoTitle: 'Desenvolvimento de Sistemas Web para Empresas — Koreo Tech',
+    seoDescription:
+      'Sistemas web para substituir planilhas, centralizar cadastros e gerar relatórios em tempo real. Primeira versão em 4 a 8 semanas.',
     visualType: 'systems-photo',
     imageSrc: MOBILE_SYSTEMS_IMAGE_PATH,
-    imageAlt: 'Painel operacional em tablet e aplicativo sincronizado sobre mesa escura de estúdio',
+    imageAlt: 'Painel operacional em tablet e aplicativo sincronizado sobre mesa escura',
   },
   {
     id: 'saas',
     index: '04',
     navLabel: 'SaaS',
     title: 'SaaS',
-    tagline: 'Plataformas por assinatura, preparadas para crescer com os usuários',
+    tagline: 'Plataformas por assinatura com arquitetura multiempresa',
+    deliveryEstimate: 'MVP funcional em 6 a 10 semanas',
     shortDescription:
-      'Criamos produtos digitais no modelo Software as a Service com arquitetura multiempresa, gestão de planos e base preparada para escalar.',
-    focusAreas: ['Arquitetura multi-tenant', 'Planos e assinaturas', 'Escala de produto'],
-    heroHeadline: 'Plataformas SaaS projetadas desde o primeiro dia para escalar com segurança.',
+      'Construímos plataformas SaaS do MVP à escala, com contas isoladas por empresa, gestão de planos e base preparada para cobrança recorrente.',
+    focusAreas: ['Arquitetura multi-tenant', 'Planos e cobrança', 'MVP em 6 a 10 semanas'],
+    heroHeadline: 'Plataformas SaaS construídas com base sólida para receber assinantes.',
     heroSummary:
-      'Transformamos modelos de negócio recorrentes em plataformas web sólidas, com onboarding simples, gestão de assinaturas e infraestrutura preparada para novos clientes.',
-    presentationTitle: 'Engenharia de produto para negócios digitais recorrentes',
+      'Tiramos seu MVP do papel em 6 a 10 semanas com isolamento de dados por empresa, controle de planos e estrutura pronta para evoluir com os usuários.',
+    presentationTitle: 'Engenharia de produto para negócios de receita recorrente',
     presentationParagraphs: [
-      'Lançar um SaaS exige equilibrar velocidade de entrada no mercado com decisões técnicas maduras. Isolamento de dados entre clientes, controle de planos, métricas de uso e experiência intuitiva definem a retenção da plataforma.',
-      'A Koreo Tech atua do MVP validado à plataforma consolidada, estruturando produtos digitais por assinatura prontos para receber dezenas ou milhares de contas com estabilidade.',
+      'Um SaaS precisa entrar no mercado rápido para validar vendas, mas sem atalhos técnicos que travem o produto quando os primeiros clientes pagantes chegarem.',
+      'Na Koreo Tech, modelamos banco de dados multiempresa, permissões de equipe, onboarding enxuto e integração com gateways de assinatura para você operar com previsibilidade.',
     ],
     benefits: [
       {
-        title: 'Arquitetura multi-tenant organizada',
+        title: 'Isolamento de dados por empresa',
         description:
-          'Separação segura de dados entre empresas assinantes, com permissões por equipe e administração centralizada da plataforma.',
+          'Arquitetura multi-tenant organizada para manter contas, usuários e permissões de cada assinante separados.',
       },
       {
-        title: 'Gestão preparada para planos e cobranças',
+        title: 'Planos e cobrança recorrente',
         description:
-          'Estrutura pronta para níveis de plano, limites de uso, períodos de teste e integração com meios de pagamento recorrente.',
+          'Estrutura preparada para níveis de assinatura, limites por plano, período de teste e integração de pagamento.',
       },
       {
-        title: 'Onboarding claro que reduz cancelamentos',
+        title: 'Onboarding direto ao valor',
         description:
-          'Interfaces pensadas para o usuário perceber valor nos primeiros minutos de uso, diminuindo a curva de aprendizado.',
+          'Fluxo inicial simples para o novo assinante configurar a conta e usar o recurso principal sem depender de suporte.',
       },
       {
-        title: 'Evolução contínua sem gargalos',
+        title: 'Código pronto para evoluir',
         description:
-          'Código modular e documentação organizada para lançar novas versões, módulos adicionais e integrações via API com agilidade.',
+          'Estrutura modular e documentada para lançar novos módulos e APIs conforme o feedback dos clientes.',
       },
     ],
     examples: [
       {
-        title: 'MVP SaaS para Validação de Mercado',
-        category: 'Novos produtos digitais',
+        title: 'MVP SaaS para Validação',
+        category: 'Novos produtos',
         description:
-          'Primeira versão funcional com escopo enxuto e acabamento profissional para conquistar os primeiros clientes pagantes.',
-        deliverables: 'Fluxo principal completo · Autenticação · Painel do assinante',
+          'Primeira versão focada no fluxo principal para colocar o produto no ar e fechar os primeiros clientes.',
+        deliverables: 'Fluxo central · Autenticação · Painel do assinante',
       },
       {
         title: 'Plataforma B2B Multiempresa',
         category: 'Software por assinatura',
         description:
-          'Ambiente completo onde cada empresa cliente gerencia seus próprios usuários, dados, permissões e relatórios.',
-        deliverables: 'Contas isoladas · Gestão de planos · Painel administrativo',
+          'Ambiente completo onde cada empresa cliente gerencia sua própria equipe, permissões e relatórios.',
+        deliverables: 'Contas isoladas · Planos · Painel administrativo',
       },
       {
-        title: 'Plataforma de Gestão de Nicho',
-        category: 'Mercados especializados',
+        title: 'SaaS para Nichos Específicos',
+        category: 'Clínicas, escritórios e varejo',
         description:
-          'Solução recorrente voltada para clínicas, escritórios, academias, imobiliárias ou prestadores de serviço específicos.',
-        deliverables: 'Módulos setoriais · Cobrança recorrente · Relatórios de uso',
+          'Plataforma recorrente com módulos dedicados para a rotina de um segmento específico de mercado.',
+        deliverables: 'Módulos setoriais · Assinaturas · Relatórios de uso',
       },
       {
-        title: 'Marketplace ou Plataforma de Assinatura',
-        category: 'Ecossistemas digitais',
+        title: 'Área de Membros ou Ecossistema',
+        category: 'Plataformas digitais',
         description:
-          'Conexão entre prestadores, conteúdos ou ferramentas e usuários finais com áreas dedicadas para cada perfil.',
-        deliverables: 'Múltiplos perfis · Área de membros · Integrações por API',
+          'Conexão entre prestadores, conteúdos ou ferramentas e assinantes com painéis separados por perfil.',
+        deliverables: 'Múltiplos perfis · Controle de acesso · APIs',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Descoberta de produto e escopo',
+        title: 'Escopo enxuto do MVP',
         description:
-          'Definimos a proposta central do SaaS, priorizamos funcionalidades essenciais e estruturamos o roadmap de lançamento.',
+          'Priorizamos apenas o essencial para lançar rápido e validar o produto com clientes reais.',
       },
       {
         number: '02',
-        title: 'UX/UI e arquitetura técnica',
+        title: 'Arquitetura e UX',
         description:
-          'Desenhamos a experiência do assinante e modelamos banco de dados, segurança multiempresa e regras de planos.',
+          'Desenhamos as telas do assinante e modelamos o banco multiempresa, segurança e regras de planos.',
       },
       {
         number: '03',
-        title: 'Desenvolvimento iterativo',
+        title: 'Sprints com entrega visível',
         description:
-          'Construímos a plataforma em ciclos curtos com entregas demonstráveis, testes de fluxos críticos e controle de qualidade.',
+          'Construímos em ciclos curtos com ambiente de teste atualizado para você acompanhar cada avanço.',
       },
       {
         number: '04',
-        title: 'Lançamento e escala',
+        title: 'Lançamento e acompanhamento',
         description:
-          'Colocamos a plataforma no ar com monitoramento básico e estrutura pronta para evoluir junto com o feedback dos usuários.',
+          'Colocamos a plataforma no ar com logs, monitoramento básico e base pronta para as próximas versões.',
       },
     ],
-    ctaTitle: 'Tem uma ideia de SaaS ou quer evoluir sua plataforma atual?',
+    ctaTitle: 'Quer lançar seu SaaS ou estruturar uma nova versão?',
     ctaDescription:
-      'Converse com a equipe da Koreo Tech para definir a arquitetura e o plano de construção do seu produto por assinatura.',
+      'Compartilhe o escopo do seu produto e receba uma proposta técnica com fases, prazos e investimento.',
     ctaButtonText: 'Conversar sobre meu SaaS',
+    seoTitle: 'Desenvolvimento de Plataformas SaaS e MVPs — Koreo Tech',
+    seoDescription:
+      'Desenvolvimento de plataformas SaaS multi-tenant com planos e assinaturas. MVP funcional entregue em 6 a 10 semanas.',
     visualType: 'saas-preview',
   },
   {
@@ -488,206 +618,214 @@ export const SERVICES: ServiceDetail[] = [
     index: '05',
     navLabel: 'Aplicativos',
     title: 'Aplicativos',
-    tagline: 'Aplicativos mobile com experiências simples e funcionais',
+    tagline: 'Apps Android e iOS integrados ao seu sistema web',
+    deliveryEstimate: 'Primeira versão em 6 a 10 semanas',
     shortDescription:
-      'Desenvolvemos aplicativos para smartphones focados em usabilidade, desempenho estável e jornadas simples no dia a dia dos usuários.',
-    focusAreas: ['Android e iOS', 'Experiência mobile intuitiva', 'Integração em nuvem'],
-    heroHeadline: 'Aplicativos mobile simples de usar e confiáveis na palma da mão.',
+      'Desenvolvemos aplicativos para Android e iOS com interface objetiva, sincronização em nuvem e apoio completo na publicação nas lojas.',
+    focusAreas: ['Android e iOS', 'Sincronização em nuvem', 'Publicação nas lojas'],
+    heroHeadline: 'Aplicativos mobile simples de usar e integrados à sua operação.',
     heroSummary:
-      'Criamos apps focados em resolver tarefas reais com poucos toques, interface leve, integração com sistemas web e suporte completo até a publicação.',
-    presentationTitle: 'Mobilidade pensada para retenção e uso frequente',
+      'Entregamos aplicativos para Android e iOS em 6 a 10 semanas, com interface leve, integração com painel web e suporte na publicação na Google Play e App Store.',
+    presentationTitle: 'Mobilidade prática para clientes e equipes externas',
     presentationParagraphs: [
-      'Um aplicativo bem-sucedido respeita o tempo de quem usa: abre rápido, apresenta ações claras e funciona sem fricção tanto para clientes finais quanto para equipes em campo.',
-      'Na Koreo Tech, projetamos aplicativos sob medida com design responsivo para telas móveis, comunicação segura com servidores em nuvem e manutenção simplificada para Android e iOS.',
+      'No celular, cada toque extra aumenta o abandono. Um bom aplicativo resolve tarefas específicas de forma rápida, seja para um cliente acompanhar pedidos ou para uma equipe registrar visitas em campo.',
+      'Na Koreo Tech, projetamos o fluxo mobile, desenvolvemos a integração com o servidor em nuvem e acompanhamos todo o processo de envio para as lojas oficiais.',
     ],
     benefits: [
       {
-        title: 'Navegação intuitiva pensada para o toque',
+        title: 'Fluxos pensados para o toque',
         description:
-          'Fluxos objetivos, botões confortáveis e leitura clara para reduzir abandono e facilitar o uso diário.',
+          'Telas limpas, ações diretas e poucos passos para facilitar o uso frequente no dia a dia.',
       },
       {
-        title: 'Integração com painel web e APIs',
+        title: 'Sincronizado com painel web',
         description:
-          'Sincronização de dados, pedidos, cadastros e notificações entre o aplicativo mobile e o sistema administrativo da empresa.',
+          'Pedidos, cadastros e notificações atualizados em tempo real entre o aplicativo e a gestão da empresa.',
       },
       {
-        title: 'Desempenho consistente no cotidiano',
+        title: 'Desempenho estável',
         description:
-          'Telas responsivas, tratamento cuidadoso de carregamento e consumo equilibrado de dados e bateria.',
+          'Carregamento bem tratado, consumo equilibrado de dados e testes em aparelhos físicos antes do lançamento.',
       },
       {
-        title: 'Acompanhamento até as lojas',
+        title: 'Apoio até as lojas',
         description:
-          'Orientação técnica na preparação de versões, requisitos das lojas de aplicativos e plano de atualizações futuras.',
+          'Orientação técnica nas contas de desenvolvedor, revisão de requisitos e publicação na Google Play e App Store.',
       },
     ],
     examples: [
       {
-        title: 'Aplicativo de Relacionamento com Clientes',
+        title: 'App de Relacionamento com Clientes',
         category: 'Serviços e fidelização',
         description:
-          'Agendamentos, acompanhamento de pedidos, notificações úteis e histórico de atendimento direto no celular do cliente.',
-        deliverables: 'Login facilitado · Notificações push · Área do cliente',
+          'Agendamentos, status de pedidos, histórico de atendimento e notificações úteis no celular.',
+        deliverables: 'Login rápido · Notificações push · Área do cliente',
       },
       {
         title: 'App para Equipes em Campo',
         category: 'Operação externa',
         description:
-          'Checklists de visitas, registro de ocorrências, envio de fotos e atualização de ordens de serviço fora do escritório.',
-        deliverables: 'Formulários móveis · Registro em campo · Sincronização web',
+          'Checklists de visita, fotos, registro de ocorrências e atualização de ordens fora do escritório.',
+        deliverables: 'Formulários móveis · Envio de fotos · Sincronização web',
       },
       {
-        title: 'Aplicativo de Serviços Sob Demanda',
+        title: 'Aplicativo de Serviços',
         category: 'Produtos digitais',
         description:
-          'Conexão rápida entre usuários e prestadores, com solicitação em etapas simples, status em tempo real e histórico.',
+          'Solicitação de serviços em etapas curtas, acompanhamento de status e histórico completo.',
         deliverables: 'Jornada de pedido · Acompanhamento · Painel gestor',
       },
       {
-        title: 'App Complementar de Plataforma Web',
-        category: 'Extensão mobile',
+        title: 'Versão Mobile de Sistema Web',
+        category: 'Extensão de plataforma',
         description:
-          'Versão móvel conectada ao seu sistema ou SaaS atual para consultas rápidas, aprovações e alertas importantes.',
-        deliverables: 'API integrada · Consultas rápidas · Aprovações no celular',
+          'Aplicativo conectado ao seu sistema ou SaaS atual para consultas rápidas, alertas e aprovações.',
+        deliverables: 'API integrada · Consultas · Aprovações móveis',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Jornada do usuário mobile',
+        title: 'Fluxo mobile',
         description:
-          'Definimos quais tarefas fazem sentido no celular e simplificamos cada fluxo para exigir o mínimo de etapas.',
+          'Definimos as tarefas essenciais no celular para manter o aplicativo leve e objetivo.',
       },
       {
         number: '02',
         title: 'Protótipo navegável',
         description:
-          'Construímos as telas do app com hierarquia visual clara para validar a experiência antes do desenvolvimento.',
+          'Você testa a navegação das telas e aprova a experiência antes da programação.',
       },
       {
         number: '03',
-        title: 'Programação e testes em dispositivos',
+        title: 'Desenvolvimento e testes',
         description:
-          'Desenvolvemos o aplicativo e suas integrações de servidor, validando usabilidade e estabilidade em aparelhos reais.',
+          'Implementamos o aplicativo e as APIs, testando estabilidade em dispositivos Android e iOS.',
       },
       {
         number: '04',
-        title: 'Publicação e evolução',
+        title: 'Publicação nas lojas',
         description:
-          'Apoiamos a disponibilização nas lojas e deixamos a base preparada para melhorias contínuas conforme o uso cresce.',
+          'Preparamos as versões finais e acompanhamos a aprovação na Google Play e App Store.',
       },
     ],
-    ctaTitle: 'Quer levar o serviço da sua empresa para o celular dos usuários?',
+    ctaTitle: 'Quer levar seu serviço ou operação para o celular?',
     ctaDescription:
-      'Compartilhe sua ideia com a Koreo Tech e descubra o melhor caminho técnico para tirar seu aplicativo do papel.',
+      'Conte qual problema o aplicativo precisa resolver e receba uma estimativa clara de prazo e investimento.',
     ctaButtonText: 'Solicitar orçamento de aplicativo',
+    seoTitle: 'Desenvolvimento de Aplicativos Android e iOS — Koreo Tech',
+    seoDescription:
+      'Criamos aplicativos Android e iOS integrados a painéis web com entrega da primeira versão em 6 a 10 semanas.',
     visualType: 'mobile-photo',
     imageSrc: MOBILE_SYSTEMS_IMAGE_PATH,
-    imageAlt: 'Smartphone apresentando aplicativo mobile moderno ao lado de painel administrativo em estúdio escuro',
+    imageAlt: 'Smartphone apresentando aplicativo mobile ao lado de painel administrativo',
   },
   {
     id: 'softwares',
     index: '06',
     navLabel: 'Softwares',
     title: 'Softwares',
-    tagline: 'Soluções personalizadas para necessidades específicas de cada negócio',
+    tagline: 'Automações, integrações entre sistemas e ferramentas dedicadas',
+    deliveryEstimate: 'Entregas por marco em 4 a 8 semanas',
     shortDescription:
-      'Engenharia de software sob medida para automações, integrações entre sistemas, ferramentas corporativas e demandas técnicas específicas.',
-    focusAreas: ['Automação sob medida', 'Integrações e APIs', 'Arquitetura dedicada'],
-    heroHeadline: 'Softwares personalizados quando ferramentas prontas não atendem o seu negócio.',
+      'Desenvolvemos APIs, conectores entre ferramentas, automações de rotina e softwares específicos quando programas prontos não atendem sua regra.',
+    focusAreas: ['Integrações e APIs', 'Automação de rotinas', 'Código próprio'],
+    heroHeadline: 'Softwares e integrações para quando ferramentas prontas travam a operação.',
     heroSummary:
-      'Desenvolvemos soluções dedicadas para regras complexas, automação de fluxos críticos e integração entre plataformas que precisam trabalhar juntas.',
-    presentationTitle: 'Engenharia dedicada para desafios técnicos específicos',
+      'Construímos automações, APIs e ferramentas dedicadas em ciclos de 4 a 8 semanas para conectar sistemas e eliminar digitação duplicada.',
+    presentationTitle: 'Engenharia direta para regras específicas de negócio',
     presentationParagraphs: [
-      'Toda empresa com processos maduros chega a um ponto em que softwares de prateleira impõem limites caros ou forçam adaptações improvisadas. É nesse momento que uma solução sob medida gera vantagem real.',
-      'Na Koreo Tech, desenhamos e construímos softwares personalizados, APIs e camadas de integração com código sustentável, documentação clara e total aderência às regras do seu negócio.',
+      'Muitas empresas pagam caro por ferramentas de prateleira e ainda perdem horas copiando dados entre sistemas que não se comunicam. Quando a regra do negócio é específica, adaptar tudo no improviso custa mais caro.',
+      'Na Koreo Tech, desenvolvemos integrações, APIs documentadas e softwares corporativos com código versionado, logs claros e propriedade total da sua empresa.',
     ],
     benefits: [
       {
-        title: 'Aderência total às regras do negócio',
+        title: 'Regras exatas da sua operação',
         description:
-          'Cada cálculo, fluxo de dados e validação reflete exatamente como sua empresa opera, sem gambiarras ou limitações artificiais.',
+          'Cálculos, validações e fluxos construídos exatamente conforme sua empresa opera, sem limitações de licença.',
       },
       {
-        title: 'Integração entre ferramentas existentes',
+        title: 'Sistemas conversando entre si',
         description:
-          'Conectamos ERPs, bancos de dados, planilhas, gateways e plataformas externas para eliminar digitação duplicada.',
+          'Conectamos ERPs, CRMs, bancos de dados, planilhas e gateways para acabar com retrabalho de digitação.',
       },
       {
-        title: 'Propriedade e autonomia tecnológica',
+        title: 'Autonomia tecnológica',
         description:
-          'Solução construída para o seu cenário, sem depender de licenças inflexíveis ou recursos bloqueados por terceiros.',
+          'Você tem acesso ao repositório, documentação técnica e controle total sobre a evolução do software.',
       },
       {
-        title: 'Segurança e confiabilidade estrutural',
+        title: 'Rastreabilidade e segurança',
         description:
-          'Boas práticas de engenharia, controle de versões, logs claros e arquitetura preparada para manutenção de longo prazo.',
+          'Controle de versões, registros de erro e testes automatizados nos fluxos críticos.',
       },
     ],
     examples: [
       {
-        title: 'Motor de Automação de Processos',
+        title: 'Automação de Processos',
         category: 'Eficiência operacional',
         description:
-          'Rotinas automatizadas para geração de relatórios, conferência de documentos, importação de lotes e disparo de alertas.',
-        deliverables: 'Regras customizadas · Processamento seguro · Auditoria',
+          'Rotinas agendadas para gerar relatórios, conferir documentos, importar lotes e disparar alertas.',
+        deliverables: 'Regras customizadas · Processamento seguro · Logs',
       },
       {
-        title: 'Camada de Integração e APIs',
-        category: 'Conectividade de sistemas',
+        title: 'Integrações e APIs',
+        category: 'Conectividade',
         description:
-          'Desenvolvimento de APIs sob medida e conectores para sincronizar dados entre plataformas comerciais, financeiras e logísticas.',
-        deliverables: 'API documentada · Webhooks · Sincronização confiável',
+          'Conectores e webhooks para sincronizar dados entre plataformas comerciais, financeiras e logísticas.',
+        deliverables: 'API documentada · Webhooks · Sincronização automática',
       },
       {
-        title: 'Ferramenta Técnica ou Calculador Dedicado',
-        category: 'Engenharia e precificação',
+        title: 'Calculador e Orçamentação',
+        category: 'Engenharia e vendas',
         description:
-          'Software específico para orçamentação complexa, simulação de cenários, análise de insumos ou regras comerciais próprias.',
-        deliverables: 'Cálculos precisos · Exportação de propostas · Histórico',
+          'Ferramenta dedicada para precificação complexa, simulação de margens e geração automática de propostas.',
+        deliverables: 'Fórmulas exatas · Exportação PDF · Histórico',
       },
       {
-        title: 'Modernização de Software Legado',
-        category: 'Evolução tecnológica',
+        title: 'Modernização de Sistema Legado',
+        category: 'Atualização técnica',
         description:
-          'Reestruturação gradual de ferramentas antigas para interfaces atuais, arquitetura segura e manutenção simplificada.',
-        deliverables: 'Migração planejada · Nova interface · Menor risco técnico',
+          'Migração planejada de ferramentas antigas para arquitetura atual, segura e fácil de manter.',
+        deliverables: 'Migração segura · Nova interface · Menor risco',
       },
     ],
     process: [
       {
         number: '01',
-        title: 'Imersão técnica e requisitos',
+        title: 'Levantamento técnico',
         description:
-          'Estudamos em profundidade o problema, os sistemas envolvidos, o volume de dados e os critérios de sucesso.',
+          'Analisamos os sistemas envolvidos, volume de dados, regras de negócio e critérios de validação.',
       },
       {
         number: '02',
-        title: 'Desenho da arquitetura',
+        title: 'Arquitetura e marcos',
         description:
-          'Definimos tecnologias, integrações, segurança e plano de entregas por marcos claros e verificáveis.',
+          'Definimos stack, integrações, segurança e um cronograma com entregas verificáveis.',
       },
       {
         number: '03',
-        title: 'Engenharia e validação',
+        title: 'Implementação e testes',
         description:
-          'Implementamos o software com revisões técnicas, testes em cenários reais e validação contínua com sua equipe.',
+          'Desenvolvemos com revisão de código e testes em cenários reais antes de ir para produção.',
       },
       {
         number: '04',
-        title: 'Implantação e suporte técnico',
+        title: 'Implantação e documentação',
         description:
-          'Realizamos a entrega assistida, documentação essencial e acompanhamento para garantir estabilidade na rotina.',
+          'Fazemos a entrega assistida com documentação clara para garantir operação estável.',
       },
     ],
-    ctaTitle: 'Tem um desafio técnico específico que precisa de solução sob medida?',
+    ctaTitle: 'Tem uma integração ou rotina que precisa automatizar?',
     ctaDescription:
-      'Apresente sua demanda para a equipe de engenharia da Koreo Tech e vamos estruturar a arquitetura ideal para resolvê-la.',
-    ctaButtonText: 'Falar sobre software sob medida',
+      'Descreva os sistemas e processos envolvidos para receber uma proposta técnica objetiva.',
+    ctaButtonText: 'Falar sobre software dedicado',
+    seoTitle: 'Desenvolvimento de Softwares, APIs e Automações — Koreo Tech',
+    seoDescription:
+      'Criamos softwares dedicados, integrações entre sistemas e automações de processos com entregas em 4 a 8 semanas.',
     visualType: 'software-photo',
     imageSrc: CUSTOM_SOFTWARE_IMAGE_PATH,
-    imageAlt: 'Arquitetura modular em vidro escuro e linhas luminosas azuis e violetas representando software sob medida',
+    imageAlt: 'Arquitetura modular em vidro escuro com linhas luminosas azuis e violetas',
   },
 ];
 
@@ -696,13 +834,56 @@ export function getServiceById(id: ServiceId): ServiceDetail {
   return found ?? SERVICES[0];
 }
 
-export function getPageIdFromHash(hashValue: string): PageId {
+export function getPageIdFromHash(hashValue: string, pathname = '/'): PageId {
+  const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+  if (normalizedPath !== '/' && normalizedPath !== '/index.html') {
+    return '404';
+  }
+
   const cleaned = hashValue.replace(/^#\/?/, '').trim().toLowerCase();
+  if (!cleaned || cleaned === 'home' || cleaned === 'como-trabalhamos') {
+    return 'home';
+  }
+
   const match = NAV_ITEMS.find((item) => item.hash === cleaned || item.id === cleaned);
-  return match ? match.id : 'home';
+  return match ? match.id : '404';
 }
 
 export function getHashFromPageId(pageId: PageId): string {
+  if (pageId === '404') {
+    return '#404';
+  }
   const match = NAV_ITEMS.find((item) => item.id === pageId);
   return match ? `#${match.hash}` : '#home';
+}
+
+export function getSeoMetaForPage(pageId: PageId): PageSeoMeta {
+  if (pageId === 'home') {
+    return {
+      title: 'Koreo Tech — Sites, Sistemas, SaaS e Aplicativos para Empresas',
+      description:
+        'Desenvolvemos sites, landing pages, sistemas web, plataformas SaaS, aplicativos e softwares com prazo definido e código próprio.',
+    };
+  }
+
+  if (pageId === 'contato') {
+    return {
+      title: 'Contato e Orçamento — Koreo Tech',
+      description:
+        'Solicite um orçamento para sites, landing pages, sistemas web, SaaS ou aplicativos. Retorno técnico em até 1 dia útil.',
+    };
+  }
+
+  if (pageId === '404') {
+    return {
+      title: 'Página não encontrada (404) — Koreo Tech',
+      description: 'A página solicitada não foi encontrada no site da Koreo Tech.',
+    };
+  }
+
+  const service = getServiceById(pageId);
+  return {
+    title: service.seoTitle,
+    description: service.seoDescription,
+  };
 }
